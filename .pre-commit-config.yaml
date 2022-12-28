@@ -1,0 +1,8 @@
+repos:
+-   repo: local
+    hooks:
+    -   id: fix-lint
+        name: fix-lint
+        entry: autopep8 --in-place
+        language: python
+        types: [python]
