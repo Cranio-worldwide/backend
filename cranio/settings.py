@@ -22,7 +22,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_filters',
     'rest_framework',
+    'users.apps.UsersConfig',
+    # 'users',
 ]
+
+AUTH_USER_MODEL = 'users.DoctorUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
