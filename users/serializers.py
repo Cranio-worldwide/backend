@@ -7,5 +7,8 @@ class DoctorUserSerializer(serializers.ModelSerializer):
     """Сериализатор для модели DoctorUser."""
     class Meta:
         fields = (
-            'id', 'first_name', 'last_name', 'email',)
+            'id', 'first_name', 'last_name', 'email', 'photo', 'country',
+            'city', 'street', 'building', 'office', 'about', 'price',
+            'phone', 'experience'
+        )
         model = DoctorUser
