@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'users.apps.UsersConfig',
-    # 'users',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -68,6 +67,7 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT')
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {

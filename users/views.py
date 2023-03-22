@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import DoctorUser
+from .serializers import DoctorUserSerializer
 
 
-class CustomUserViewSet(viewsets.ModelViewSet):
-    """DoctorUser model view set."""
+class DoctorUserViewSet(viewsets.ModelViewSet):
+    """Вьюсет для модели DoctorUser."""
 
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
+    queryset = DoctorUser.objects.all()
+    serializer_class = DoctorUserSerializer

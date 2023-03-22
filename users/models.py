@@ -1,52 +1,51 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
+
+from .managers import CustomUserManager
 
 
-class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        """
-        Создает и сохраняет Юзера с заданным email и паролем.
-        """
-        if not email:
-            raise ValueError('Users must have an email address')
-
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save()
-        return user
-
-    def create_superuser(self, email, password=None):
-        """
-        Создает и сохраняет суперпользователя с заданным email и паролем.
-        """
-
-        user = self.create_user(
-            email,
-            password=password
-        )
-        user.is_admin = True
-        user.save()
-        return user
-
-
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     Базовый класс для регистрации пользователей,
     вместо username используется email.
     """
-    email = models.EmailField(
-        'адрес электронной почты',
-        max_length=255,
-        unique=True
-    )
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    DOCTOR = 'doctor'
+    CUSTOMER = 'customer'
+    ADMIN = 'admin'
 
-    USERNAME_FIELD = 'email'
+    ROLE_CHOICES = (
+        (DOCTOR, 'Доктор'),
+        (CUSTOMER, 'Пользователь'),
+        (ADMIN, 'Администратор')
+    )
+    email = models.EmailField('email address', unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    role = models.CharField(
+        'роль пользователя',
+        max_length=50,
+        choices=ROLE_CHOICES,
+        default=DOCTOR
+    )
+
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
     def __str__(self):
         return self.email
+
+
+class DoctorUser(CustomUser):
+    """
+    Класс для создания пользователя: Терапевт.
+    """
+    first_name = models.CharField(
+        blank=True, max_length=150, verbose_name='first name'
+    )
+    last_name = models.CharField(
+        blank=True, max_length=150, verbose_name='last name'
+    )

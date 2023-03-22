@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from .models import CustomUser
+from .models import DoctorUser
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    """DoctorUser model serializer for admin."""
+class DoctorUserSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели DoctorUser."""
     class Meta:
         fields = (
-            'id', 'first_name', 'last_name', 'email')
-        model = CustomUser
+            'id', 'first_name', 'last_name', 'email',)
+        model = DoctorUser
