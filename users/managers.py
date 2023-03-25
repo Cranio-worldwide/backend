@@ -9,7 +9,7 @@ class CustomUserManager(BaseUserManager):
     """
     def create_user(self, email, password, **extra_fields):
         """
-        Создает и сохраняет Юзера с заданным email и паролем.
+        Creates and saves a User with the specified email and password.
         """
         if not email:
             raise ValueError(_('The Email must be set'))
@@ -21,7 +21,7 @@ class CustomUserManager(BaseUserManager):
 
     def create_superuser(self, email, password, **extra_fields):
         """
-        Создает и сохраняет суперпользователя с заданным email и паролем.
+        Creates and saves a superuser with the specified email and password.
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
