@@ -39,7 +39,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class Specialists(CustomUser):
+class Specialist(CustomUser):
     """
     Class for creating a user: Specialists.
     """
@@ -52,7 +52,7 @@ class Specialists(CustomUser):
     photo = models.ImageField(
         null=True,
         blank=True,
-        upload_to='avatars/%Y-%m-%d'
+        upload_to='media/%Y-%m-%d'
     )
     about = models.TextField(blank=True)
     phone = models.CharField(max_length=17, unique=True)

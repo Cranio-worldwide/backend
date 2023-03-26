@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Address, Services
+from .models import Address, Service
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -9,11 +9,11 @@ class AddressAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-class ServicesAdmin(admin.ModelAdmin):
+class ServiceAdmin(admin.ModelAdmin):
     list_display = ('specialists_id', 'name_service', 'price', 'currency')
     search_fields = ('specialists_id', 'name_service', 'price', 'currency')
     empty_value_display = '-пусто-'
 
 
 admin.site.register(Address, AddressAdmin)
-admin.site.register(Services, ServicesAdmin)
+admin.site.register(Service, ServiceAdmin)

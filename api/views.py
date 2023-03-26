@@ -1,26 +1,26 @@
 from rest_framework import viewsets
 
-from users.models import Specialists
-from .models import Address, Services
+from users.models import Specialist
+from .models import Address, Service
 from .serializers import (
-    AdressSerializers, SpecialistsSerializer, ServicesSerializers
+    AdressSerializer, SpecialistSerializer, ServiceSerializer
 )
 
 
-class SpecialistsViewSet(viewsets.ModelViewSet):
+class SpecialistViewSet(viewsets.ModelViewSet):
     """ViewSet for model Specialists."""
 
-    queryset = Specialists.objects.all()
-    serializer_class = SpecialistsSerializer
+    queryset = Specialist.objects.all()
+    serializer_class = SpecialistSerializer
 
 
 class AdressViewSet(viewsets.ModelViewSet):
     """ViewSet for model Address."""
     queryset = Address.objects.all()
-    serializer_class = AdressSerializers
+    serializer_class = AdressSerializer
 
 
-class ServicesViewSet(viewsets.ModelViewSet):
+class ServiceViewSet(viewsets.ModelViewSet):
     """ViewSet for model Service."""
-    queryset = Services.objects.all()
-    serializer_class = ServicesSerializers
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer

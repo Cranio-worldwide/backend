@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Specialists
+from users.models import Specialist
 
 
 class Address(models.Model):
@@ -7,7 +7,7 @@ class Address(models.Model):
     The model for describing the place of reception of a specialist
     """
     specialists_id = models.ForeignKey(
-        Specialists,
+        Specialist,
         related_name='address',
         on_delete=models.CASCADE
     )
@@ -19,7 +19,7 @@ class Address(models.Model):
         return f'{self.loc_latitude}, {self.loc_longitude}'
 
 
-class Services(models.Model):
+class Service(models.Model):
     """
     The model for describing the services and prices of a specialist
     """
@@ -33,7 +33,7 @@ class Services(models.Model):
         (RUB, 'RUB')
     )
     specialists_id = models.ForeignKey(
-        Specialists,
+        Specialist,
         related_name='service',
         on_delete=models.CASCADE
     )

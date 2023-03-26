@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from users.models import Specialists
-from .models import Address, Services
+from users.models import Specialist
+from .models import Address, Service
 
 
-class SpecialistsSerializer(serializers.ModelSerializer):
+class SpecialistSerializer(serializers.ModelSerializer):
     """Serializer for model Specialists."""
     address = serializers.StringRelatedField(many=True, read_only=True)
     service = serializers.StringRelatedField(many=True, read_only=True)
@@ -14,10 +14,10 @@ class SpecialistsSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name', 'email', 'photo',
             'about', 'phone', 'experience', 'diploma', 'address', 'service'
         )
-        model = Specialists
+        model = Specialist
 
 
-class AdressSerializers(serializers.ModelSerializer):
+class AdressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
     class Meta:
         fields = (
@@ -26,11 +26,11 @@ class AdressSerializers(serializers.ModelSerializer):
         model = Address
 
 
-class ServicesSerializers(serializers.ModelSerializer):
+class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for model Service."""
     class Meta:
         fields = (
             'specialists_id', 'name_service', 'price', 'currency',
             'description'
         )
-        model = Services
+        model = Service

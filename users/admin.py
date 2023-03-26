@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, Specialists
+from .models import CustomUser, Specialist
 
 
 class CustomUserAdmin(UserAdmin):
@@ -33,10 +33,10 @@ class CustomUserAdmin(UserAdmin):
     ordering = ("email", "role",)
 
 
-class SpecialistsAdmin(admin.ModelAdmin):
+class SpecialistAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'phone', 'diploma')
     search_fields = ('id', 'first_name', 'last_name', 'phone', 'diploma')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Specialists, SpecialistsAdmin)
+admin.site.register(Specialist, SpecialistAdmin)
