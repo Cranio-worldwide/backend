@@ -39,4 +39,3 @@ admin.site.register(Service, ServiceAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(City, CityAdmin)
-

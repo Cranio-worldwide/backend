@@ -99,7 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# LANGUAGES SETTINGS 
+# LANGUAGES SETTINGS
 
 gettext = lambda s: s
 LANGUAGES = (
@@ -107,7 +107,7 @@ LANGUAGES = (
     ('ru', _('Russian')),
 )
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
