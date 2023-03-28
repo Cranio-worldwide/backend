@@ -1,0 +1,65 @@
+import requests
+from http import HTTPStatus
+from googletrans import Translator
+from transliterate import translit
+
+
+def get_user_ip_address(request):
+    user_ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
+    if user_ip_address:
+        ip_address = user_ip_address.split(',')[0]
+    else:
+        ip_address = request.META.get('REMOTE_ADDR')
+    return ip_address
+
+
+def get_geodata(ip_address):
+    if ip_address == '127.0.0.1':
+        ENDPOINTS = (
+            'https://ipapi.co/json/',
+            'https://api.ipgeolocation.io/ipgeo?apiKey=2b3f60044ccf4af3b5b67882e3c2172f',
+        )
+    else:
+        ENDPOINTS = (
+            f'https://ipapi.co/{ip_address}/json/',                                                         # 1000 free requests / day
+            f'https://api.ipgeolocation.io/ipgeo?apiKey=2b3f60044ccf4af3b5b67882e3c2172f&ip={ip_address}',  # 1000 free requests / day
+        )
+    for endpoint in ENDPOINTS:
+        response = requests.get(endpoint)
+        if response.status_code == HTTPStatus.OK:
+            return response.json()
+    return None
+
+
+def parse_city_country(request, geodata):
+    city, country = geodata.get('city'), geodata.get('country_name')
+    lang_prefix = request.path[1:3]
+    if lang_prefix != 'en':
+        translator = Translator()
+        location = f"{geodata.get('city')}|{geodata.get('country_name')}"
+        location = translator.translate(location, dest=lang_prefix)
+        city, country = [name.strip() for name in location.text.split('|')]
+    return city, country
+
+
+def parse_coordinates(geodata):
+    return geodata.get('latitude'), geodata.get('longitude')
+
+
+def translate_field(field_en, field_ru):
+    translator = Translator()
+    if not field_en and field_ru:
+        translated_obj = translator.translate(field_ru, dest='en', src='ru')
+        field_en = translated_obj.text
+    if not field_ru and field_en:
+        translated_obj = translator.translate(field_en, dest='ru')
+        field_ru = translated_obj.text
+    return field_en, field_ru
+
+
+def transliterate_field(field_en, field_ru):
+    if not field_en and field_ru:
+        field_en = translit(field_ru, reversed=True)
+    if not field_ru and field_en:
+        field_ru = translit(field_en, 'ru')
+    return field_en, field_ru

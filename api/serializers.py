@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from users.models import Specialist
-from .models import Address, Service
+from .models import Address, Service, Country, City, News
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
@@ -34,3 +34,29 @@ class ServiceSerializer(serializers.ModelSerializer):
             'description'
         )
         model = Service
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    """Serializer for model Country."""
+    class Meta:
+        fields = ('id', 'name')
+        model = Country
+
+
+class CitySerializer(serializers.ModelSerializer):
+    """Serializer for model City."""
+    coordinates = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('id', 'name', 'coordinates')
+        model = City
+
+    def get_coordinates(self, obj):
+        return f'{obj.latitude}, {obj.longitude}'
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    """Serializer for model News."""
+    class Meta:
+        fields = ('id', 'date', 'picture', 'description', 'published')
+        model = News
