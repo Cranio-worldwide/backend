@@ -36,23 +36,23 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
 
 
-class CountrySerializer(serializers.ModelSerializer):
-    """Serializer for model Country."""
-    class Meta:
-        fields = ('id', 'name')
-        model = Country
+# class CountrySerializer(serializers.ModelSerializer):
+#     """Serializer for model Country."""
+#     class Meta:
+#         fields = ('id', 'name')
+#         model = Country
 
 
-class CitySerializer(serializers.ModelSerializer):
-    """Serializer for model City."""
-    coordinates = serializers.SerializerMethodField()
+# class CitySerializer(serializers.ModelSerializer):
+#     """Serializer for model City."""
+#     coordinates = serializers.SerializerMethodField()
 
-    class Meta:
-        fields = ('id', 'name', 'coordinates')
-        model = City
+#     class Meta:
+#         fields = ('id', 'name', 'coordinates')
+#         model = City
 
-    def get_coordinates(self, obj):
-        return f'{obj.latitude}, {obj.longitude}'
+#     def get_coordinates(self, obj):
+#         return f'{obj.latitude}, {obj.longitude}'
 
 
 class NewsSerializer(serializers.ModelSerializer):

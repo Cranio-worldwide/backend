@@ -92,6 +92,9 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+    def coordinates(self):
+        return (float(self.latitude), float(self.longitude))
+
 
 class News(models.Model):
     """

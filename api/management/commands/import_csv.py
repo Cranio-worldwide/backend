@@ -4,7 +4,7 @@ from pathlib import Path
 from django.core.management.base import BaseCommand
 
 from users.models import Specialist
-from api.models import Address, Service, City, Country
+from api.models import Address, Service, City, Country, News
 
 
 class Command(BaseCommand):
@@ -12,11 +12,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         FILE_HANDLE = (
-            ('countries.csv', Country),
-            ('cities.csv', City),
+            # ('countries.csv', Country),
+            # ('cities.csv', City),
             ('users.csv', Specialist),
             ('addresses.csv', Address),
             ('services.csv', Service),
+            ('news.csv', News),
         )
         for file, model in FILE_HANDLE:
             self.stdout.write(f'{"---"*40}\n Открываем файл {file}')

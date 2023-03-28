@@ -3,12 +3,11 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from users.models import Specialist
-from .models import Address, Service, Country, News
+from .models import Address, Service, Country, News, City
 from .serializers import (
-    AdressSerializer, SpecialistSerializer, ServiceSerializer,
-    CountrySerializer, CitySerializer, NewsSerializer
+    AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer
 )
-from .utils import get_geodata, get_user_ip_address, parse_city_country
+from .utils import get_geodata, get_user_ip_address, parse_geodata
 
 
 class SpecialistViewSet(viewsets.ModelViewSet):
@@ -30,19 +29,19 @@ class ServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
 
 
-class CountryViewSet(viewsets.ReadOnlyModelViewSet):
-    """Viewset for model Country. Adds/changes - through admin panel."""
-    queryset = Country.objects.all()
-    serializer_class = CountrySerializer
+# class CountryViewSet(viewsets.ReadOnlyModelViewSet):
+#     """Viewset for model Country. Adds/changes - through admin panel."""
+#     queryset = Country.objects.all()
+#     serializer_class = CountrySerializer
 
 
-class CityViewSet(viewsets.ReadOnlyModelViewSet):
-    """Viewset for model Country. Adds/changes - through admin panel."""
-    serializer_class = CitySerializer
+# class CityViewSet(viewsets.ReadOnlyModelViewSet):
+#     """Viewset for model Country. Adds/changes - through admin panel."""
+#     serializer_class = CitySerializer
 
-    def get_queryset(self):
-        country = get_object_or_404(Country, pk=self.kwargs.get('country_id'))
-        return country.cities.all()
+#     def get_queryset(self):
+#         country = get_object_or_404(Country, pk=self.kwargs.get('country_id'))
+#         return country.cities.all()
 
 
 class NewsViewSet(viewsets.ModelViewSet):
@@ -56,9 +55,10 @@ class GeopositionViewSet(viewsets.ViewSet):
     def list(self, request):
         ip_address = get_user_ip_address(request)
         geodata = get_geodata(ip_address)
-        city, country = parse_city_country(request, geodata)
+        city, country, coordinates = parse_geodata(request, geodata)
         data = {
             "city": city,
-            "country": country
+            "country": country,
+            "coordinates": coordinates,
         }
         return Response(data)
