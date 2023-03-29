@@ -16,20 +16,20 @@ def get_user_ip_address(request):
 
 def get_geodata(ip_address):
     if ip_address == '127.0.0.1' or ip_address.startswith('172'):
-        ENDPOINTS = (
+        endpoints = (
             # temporary solution for development process
             'https://ipapi.co/json/',
             'https://api.ipgeolocation.io/ipgeo?'
             'apiKey=2b3f60044ccf4af3b5b67882e3c2172f',
         )
     else:
-        ENDPOINTS = (
+        endpoints = (
             # these endpoints provide 1000 free requests/day, more to be added
             f'https://ipapi.co/{ip_address}/json/',
             'https://api.ipgeolocation.io/ipgeo?'
             f'apiKey=2b3f60044ccf4af3b5b67882e3c2172f&ip={ip_address}',
         )
-    for endpoint in ENDPOINTS:
+    for endpoint in endpoints:
         response = requests.get(endpoint)
         print(endpoint)
         if response.status_code == HTTPStatus.OK:

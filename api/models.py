@@ -22,8 +22,8 @@ class Address(models.Model):
         return f'{self.loc_latitude}, {self.loc_longitude}'
 
     def save(self, **kwargs):
-        self.description_en, self.description_ru = \
-            translate_field(self.description_en, self.description_ru)
+        self.description_en, self.description_ru = translate_field(
+            self.description_en, self.description_ru)
         super(Address, self).save()
 
 
@@ -59,10 +59,10 @@ class Service(models.Model):
         return f'{self.name_service}, {self.price}, {self.currency}'
 
     def save(self, **kwargs):
-        self.name_service_en, self.name_service_ru = \
-            translate_field(self.name_service_en, self.name_service_ru)
-        self.description_en, self.description_ru = \
-            translate_field(self.description_en, self.description_ru)
+        self.name_service_en, self.name_service_ru = translate_field(
+            self.name_service_en, self.name_service_ru)
+        self.description_en, self.description_ru = translate_field(
+            self.description_en, self.description_ru)
         super(Service, self).save()
 
 

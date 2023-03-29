@@ -64,10 +64,10 @@ class Specialist(CustomUser):
         return f'{self.first_name} {self.last_name}'
 
     def save(self, **kwargs):
-        self.first_name_en, self.first_name_ru = \
-            transliterate_field(self.first_name_en, self.first_name_ru)
-        self.last_name_en, self.last_name_ru = \
-            transliterate_field(self.last_name_en, self.last_name_ru)
+        self.first_name_en, self.first_name_ru = transliterate_field(
+            self.first_name_en, self.first_name_ru)
+        self.last_name_en, self.last_name_ru = transliterate_field(
+            self.last_name_en, self.last_name_ru)
         # альтернатива, пока оставлю тут
         # full_name_en = f'{self.first_name_en}&&{self.last_name_en}'
         # full_name_ru = f'{self.first_name_ru}&&{self.last_name_ru}'
@@ -75,6 +75,6 @@ class Specialist(CustomUser):
         #     transliterate_field(full_name_en, full_name_ru)
         # self.first_name_en, self.last_name_en = full_name_en.split('&&')
         # self.first_name_ru, self.last_name_ru = full_name_ru.split('&&')
-        self.about_en, self.about_ru = \
-            translate_field(self.about_en, self.about_ru)
+        self.about_en, self.about_ru = translate_field(
+            self.about_en, self.about_ru)
         super(Specialist, self).save()

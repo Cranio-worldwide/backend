@@ -11,13 +11,13 @@ class Command(BaseCommand):
     help = 'Fills the database with data from csv-file in static folder'
 
     def handle(self, *args, **kwargs):
-        FILE_HANDLE = (
+        file_handle = (
             ('users.csv', Specialist),
             ('addresses.csv', Address),
             ('services.csv', Service),
             ('news.csv', News),
         )
-        for file, model in FILE_HANDLE:
+        for file, model in file_handle:
             self.stdout.write(f'{"---"*40}\n Открываем файл {file}')
             file_path = Path('static', 'import_db', file)
             if not file_path.exists():
