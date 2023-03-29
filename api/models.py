@@ -113,6 +113,6 @@ class News(models.Model):
         return self.description[:15]
 
     def save(self, **kwargs):
-        self.description_en, self.description_ru = \
-            translate_field(self.description_en, self.description_ru)
+        self.description_en, self.description_ru = translate_field(
+            self.description_en, self.description_ru)
         super(News, self).save()
