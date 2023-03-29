@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-28 13:10+0300\n"
+"POT-Creation-Date: 2023-03-29 10:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
+
 #: .\api\models.py:34
 msgid "USD"
 msgstr "USD"
@@ -32,7 +33,7 @@ msgid "RUB"
 msgstr "Руб"
 
 #: .\api\models.py:49
-msgid "Visit a specialist"
+msgid "Specialist's appointment"
 msgstr "Прием специалиста"
 
 #: .\cranio\settings.py:106
@@ -54,3 +55,4 @@ msgstr "Superuser должен иметь значение is_staff=True."
 #: .\users\managers.py:33
 msgid "Superuser must have is_superuser=True."
 msgstr "Superuser должен иметь значение is_superuser=True."
+

@@ -1,6 +1,6 @@
 from modeltranslation.translator import register, TranslationOptions
 from users.models import Specialist
-from api.models import Address, Service, Country, City, News
+from api.models import Address, Service, News
 
 
 @register(Specialist)
@@ -18,14 +18,14 @@ class ServiceTranslationOptions(TranslationOptions):
     fields = ('name_service', 'description')
 
 
-@register(Country)
-class CountryTranslationOptions(TranslationOptions):
-    fields = ('name',)
+# @register(Country)
+# class CountryTranslationOptions(TranslationOptions):
+#     fields = ('name',)
 
 
-@register(City)
-class CityTranslationOptions(TranslationOptions):
-    fields = ('name',)
+# @register(City)
+# class CityTranslationOptions(TranslationOptions):
+#     fields = ('name',)
 
 
 @register(News)

@@ -1,13 +1,12 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 
 from users.models import Specialist
-from .models import Address, Service, Country, News, City
+from .models import Address, Service, News
 from .serializers import (
     AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer
 )
-from .utils import get_geodata, get_user_ip_address, parse_geodata
+from .utils import get_geodata, get_user_ip_address, parse_coordinates
 
 
 class SpecialistViewSet(viewsets.ModelViewSet):
@@ -40,7 +39,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 #     serializer_class = CitySerializer
 
 #     def get_queryset(self):
-#         country = get_object_or_404(Country, pk=self.kwargs.get('country_id'))
+#       country = get_object_or_404(Country, pk=self.kwargs.get('country_id'))
 #         return country.cities.all()
 
 
@@ -55,10 +54,6 @@ class GeopositionViewSet(viewsets.ViewSet):
     def list(self, request):
         ip_address = get_user_ip_address(request)
         geodata = get_geodata(ip_address)
-        city, country, coordinates = parse_geodata(request, geodata)
-        data = {
-            "city": city,
-            "country": country,
-            "coordinates": coordinates,
-        }
+        coordinates = parse_coordinates(geodata)
+        data = {"coordinates": coordinates}
         return Response(data)

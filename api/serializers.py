@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from users.models import Specialist
-from .models import Address, Service, Country, City, News
+from .models import Address, Service, News
 
 
 class SpecialistSerializer(serializers.ModelSerializer):

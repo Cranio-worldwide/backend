@@ -17,13 +17,17 @@ def get_user_ip_address(request):
 def get_geodata(ip_address):
     if ip_address == '127.0.0.1' or ip_address.startswith('172'):
         ENDPOINTS = (
+            # temporary solution for development process
             'https://ipapi.co/json/',
-            'https://api.ipgeolocation.io/ipgeo?apiKey=2b3f60044ccf4af3b5b67882e3c2172f',
+            'https://api.ipgeolocation.io/ipgeo?'
+            'apiKey=2b3f60044ccf4af3b5b67882e3c2172f',
         )
     else:
         ENDPOINTS = (
-            f'https://ipapi.co/{ip_address}/json/',                                                         # 1000 free requests / day
-            f'https://api.ipgeolocation.io/ipgeo?apiKey=2b3f60044ccf4af3b5b67882e3c2172f&ip={ip_address}',  # 1000 free requests / day
+            # these endpoints provide 1000 free requests/day, more to be added
+            f'https://ipapi.co/{ip_address}/json/',
+            'https://api.ipgeolocation.io/ipgeo?'
+            f'apiKey=2b3f60044ccf4af3b5b67882e3c2172f&ip={ip_address}',
         )
     for endpoint in ENDPOINTS:
         response = requests.get(endpoint)
@@ -33,16 +37,20 @@ def get_geodata(ip_address):
     return None
 
 
-def parse_geodata(request, geodata):
-    city, country = geodata.get('city'), geodata.get('country_name')
-    coordinates = f"{geodata.get('latitude')}, {geodata.get('longitude')}"
-    lang_prefix = request.path[1:3]
-    if lang_prefix != 'en':
-        translator = Translator()
-        location = f"{geodata.get('city')}|{geodata.get('country_name')}"
-        location = translator.translate(location, dest=lang_prefix)
-        city, country = [name.strip() for name in location.text.split('|')]
-    return city, country, coordinates
+# def parse_geodata(request, geodata):
+#     city, country = geodata.get('city'), geodata.get('country_name')
+#     coordinates = f"{geodata.get('latitude')}, {geodata.get('longitude')}"
+#     lang_prefix = request.path[1:3]
+#     if lang_prefix != 'en':
+#         translator = Translator()
+#         location = f"{geodata.get('city')}|{geodata.get('country_name')}"
+#         location = translator.translate(location, dest=lang_prefix)
+#         city, country = [name.strip() for name in location.text.split('|')]
+#     return city, country, coordinates
+
+
+def parse_coordinates(geodata):
+    return f"{geodata.get('latitude')}, {geodata.get('longitude')}"
 
 
 def translate_field(field_en, field_ru):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-28 13:10+0300\n"
+"POT-Creation-Date: 2023-03-29 10:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: .\api\models.py:34
 msgid "USD"
 msgstr ""
@@ -30,7 +31,7 @@ msgid "RUB"
 msgstr ""
 
 #: .\api\models.py:49
-msgid "Visit a specialist"
+msgid "Specialist's appointment"
 msgstr ""
 
 #: .\cranio\settings.py:106
