@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from modeltranslation.admin import TranslationAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Specialist
@@ -33,9 +34,11 @@ class CustomUserAdmin(UserAdmin):
     ordering = ("email", "role",)
 
 
-class SpecialistAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'phone', 'diploma')
-    search_fields = ('id', 'first_name', 'last_name', 'phone', 'diploma')
+class SpecialistAdmin(TranslationAdmin):
+    list_display = ('id', 'email', 'first_name', 'last_name', 'phone',
+                    'diploma')
+    search_fields = ('id', 'email', 'first_name', 'last_name', 'phone',
+                     'diploma')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

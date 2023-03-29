@@ -1,7 +1,9 @@
 import os
 
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -14,6 +16,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,7 +26,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'users.apps.UsersConfig',
-    'api'
+    'api',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -31,6 +34,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -93,13 +97,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+
+# LANGUAGES SETTINGS
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('ru', 'Русский'),
+)
+
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
+
+
+# OTHER SETTINGS
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
