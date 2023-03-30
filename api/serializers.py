@@ -75,5 +75,4 @@ class StaticContentSerializer(serializers.ModelSerializer):
         language = self.context['request'].path[1:3]
         if language == 'en':
             return obj.fields_en
-        if language == 'ru':
-            return obj.fields_ru
+        return obj.fields_ru
