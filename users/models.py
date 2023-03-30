@@ -1,9 +1,13 @@
+import datetime
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from .managers import CustomUserManager
 from api.utils import translate_field, transliterate_field
+
+from .managers import CustomUserManager
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -57,7 +61,10 @@ class Specialist(CustomUser):
     )
     about = models.TextField(blank=True)
     phone = models.CharField(max_length=17, unique=True)
-    experience = models.PositiveSmallIntegerField(blank=True, null=True)
+    beginning_of_the_experience = models.PositiveSmallIntegerField(
+        blank=True, null=True,
+        validators=[MinValueValidator(1923),
+                    MaxValueValidator(datetime.date.today().year)])
     diploma = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
