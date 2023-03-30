@@ -2,9 +2,10 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from users.models import Specialist
-from .models import Address, Service, News
+from .models import Address, Service, News, StaticContent
 from .serializers import (
-    AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer
+    AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
+    StaticContentSerializer
 )
 from .utils import get_geodata, get_user_ip_address, parse_coordinates
 
@@ -50,10 +51,22 @@ class NewsViewSet(viewsets.ModelViewSet):
 
 
 class GeopositionViewSet(viewsets.ViewSet):
-    """Viewset for retrieving user geoposition by IP-address from request"""
+    """Viewset for reciept of user geoposition by IP-address"""
     def list(self, request):
         ip_address = get_user_ip_address(request)
         geodata = get_geodata(ip_address)
         coordinates = parse_coordinates(geodata)
         data = {"coordinates": coordinates}
         return Response(data)
+
+
+class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
+    """Viewset for transfer of multilingual static content to frontend"""
+    serializer_class = StaticContentSerializer
+    queryset = StaticContent.objects.all()
+    lookup_field = 'name'
+
+    # def get_serializer_class(self):
+    #     if self.request.path[1:3] == 'en':
+    #         return EnStaticContentSerializer
+    #     return RuStaticContentSerializer
