@@ -116,3 +116,15 @@ class News(models.Model):
         self.description_en, self.description_ru = translate_field(
             self.description_en, self.description_ru)
         super(News, self).save()
+
+
+class StaticContent(models.Model):
+    """
+    The model contating static content for frontend
+    """
+    name = models.SlugField(max_length=50)
+    fields_ru = models.JSONField()
+    fields_en = models.JSONField()
+
+    def __str__(self):
+        return self.name

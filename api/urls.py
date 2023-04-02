@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (AdressViewSet, SpecialistViewSet, ServiceViewSet,
-                    NewsViewSet, GeopositionViewSet)
+                    NewsViewSet, GeopositionViewSet, StaticContentViewSet)
 
 
 router = DefaultRouter()
@@ -15,6 +15,7 @@ router.register('services', ServiceViewSet, basename='services')
 #                 basename='cities')
 router.register('news', NewsViewSet, basename='news'),
 router.register('me', GeopositionViewSet, basename='me')
+router.register('static', StaticContentViewSet, basename='static')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

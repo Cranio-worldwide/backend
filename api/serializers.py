@@ -3,8 +3,7 @@ import datetime as dt
 from rest_framework import serializers
 
 from users.models import Specialist
-
-from .models import Address, News, Service
+from .models import Address, Service, News, StaticContent
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
@@ -68,3 +67,19 @@ class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'date', 'picture', 'description', 'published')
         model = News
+
+
+class StaticContentSerializer(serializers.ModelSerializer):
+    """Serializer for model StaticContent."""
+    static_fields = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('name', 'static_fields')
+        model = StaticContent
+        lookup_field = 'name'
+
+    def get_static_fields(self, obj):
+        language = self.context['request'].path[1:3]
+        if language == 'en':
+            return obj.fields_en
+        return obj.fields_ru
