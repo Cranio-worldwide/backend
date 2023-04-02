@@ -1,3 +1,5 @@
+import datetime as dt
+
 from rest_framework import serializers
 
 from users.models import Specialist
@@ -8,13 +10,18 @@ class SpecialistSerializer(serializers.ModelSerializer):
     """Serializer for model Specialists."""
     address = serializers.StringRelatedField(many=True, read_only=True)
     service = serializers.StringRelatedField(many=True, read_only=True)
+    total_experience = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
             'id', 'first_name', 'last_name', 'email', 'photo',
-            'about', 'phone', 'experience', 'diploma', 'address', 'service'
+            'about', 'phone', 'beginning_of_the_experience',
+            'total_experience', 'diploma', 'address', 'service'
         )
         model = Specialist
+
+    def get_total_experience(self, obj):
+        return dt.datetime.now().year - obj.beginning_of_the_experience
 
 
 class AdressSerializer(serializers.ModelSerializer):
