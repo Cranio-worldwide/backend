@@ -1,10 +1,10 @@
 import datetime as dt
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from users.models import Specialist
-
 from .models import Address, News, Service
+from users.models import CustomUser, Specialist
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
@@ -68,3 +68,30 @@ class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'date', 'picture', 'description', 'published')
         model = News
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer for users' authentification."""
+
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'email', 'password')
+        extra_kwargs = {
+            'email': {'required': True},
+            'password': {'required': True,
+                         'write_only': True},
+        }
+
+    def validate_password(self, data):
+        try:
+            validate_password(data)
+        except ValidationError as exc:
+            raise serializers.ValidationError(str(exc))
+        return data
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = CustomUser.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
