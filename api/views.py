@@ -6,11 +6,11 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import CustomUser, Specialist
+from users.models import Specialist
 from .models import Address, Service, News
 from .serializers import (
     AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
-    UserSerializer
+    SpecialistCreateSerializer
 )
 from .utils import (
     get_geodata, get_user_ip_address, parse_coordinates,
@@ -72,7 +72,7 @@ class GeopositionViewSet(viewsets.ViewSet):
 class RegisterView(APIView):
     """Viewset for users' registaration with JWT."""
 
-    serializer_class = UserSerializer
+    serializer_class = SpecialistCreateSerializer
 
     def post(self, request):
         language = get_language_from_request(request, check_path=True)
@@ -81,7 +81,7 @@ class RegisterView(APIView):
         serializer.save()
 
         user = get_object_or_404(
-            CustomUser,
+            Specialist,
             email=serializer.data['email'])
 
         send_verification_email(request, user, language)
@@ -95,7 +95,7 @@ class VerifyEmail(APIView):
         token = request.GET.get('token')
         try:
             data = jwt.decode(token, settings.SECRET_KEY)
-            user = get_object_or_404(CustomUser, id=data['user_id'])
+            user = get_object_or_404(Specialist, id=data['user_id'])
             if not user.is_verified:
                 user.is_verified = True
                 user.save()

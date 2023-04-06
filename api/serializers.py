@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from .models import Address, News, Service
-from users.models import CustomUser, Specialist
+from users.models import Specialist
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
@@ -70,12 +70,17 @@ class NewsSerializer(serializers.ModelSerializer):
         model = News
 
 
-class UserSerializer(serializers.ModelSerializer):
+class SpecialistCreateSerializer(serializers.ModelSerializer):
     """Serializer for users' authentification."""
 
     class Meta:
-        model = CustomUser
-        fields = ('id', 'email', 'password')
+        model = Specialist
+        fields = (
+            'id', 'email', 'password',
+            'first_name', 'last_name', 'photo',
+            'about', 'phone', 'beginning_of_the_experience',
+            'diploma', 'address', 'service'
+        )
         extra_kwargs = {
             'email': {'required': True},
             'password': {'required': True,
@@ -91,7 +96,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        user = CustomUser.objects.create(**validated_data)
+        address = validated_data.pop('address')
+        service = validated_data.pop('service')
+        user = Specialist.objects.create(**validated_data)
+        user.address.set(address)
+        user.service.set(service)
         user.set_password(password)
         user.save()
         return user
