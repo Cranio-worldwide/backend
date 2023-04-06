@@ -1,6 +1,11 @@
 import requests
-from http import HTTPStatus
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.urls import reverse
 from googletrans import Translator
+from http import HTTPStatus
+from rest_framework_simplejwt.tokens import RefreshToken
 from transliterate import translit
 
 
@@ -70,3 +75,31 @@ def transliterate_field(field_en, field_ru):
     if not field_ru and field_en:
         field_ru = translit(field_en, 'ru')
     return field_en, field_ru
+
+
+def send_verification_email(request, user, language):
+    token = RefreshToken.for_user(user).access_token
+    current_site = get_current_site(request).domain
+    url_path = reverse('verify_email')
+    absurl = 'http://' + current_site + url_path + '?token=' + str(token)
+    subject = settings.CONSTANTS['EMAIL_SUBJECT']
+    text = settings.CONSTANTS["EMAIL_MESSEGE"]
+
+    if language == 'ru':
+        translator = Translator()
+        subject = translator.translate(subject, dest='ru', src='en')
+        subject = subject.text
+        text = translator.translate(text, dest='ru', src='en')
+        text = text.text
+
+    email_body = (
+        f'{user.email} \n'
+        f'{text} \n' + absurl
+    )
+
+    email = EmailMessage(
+        to=[user.email],
+        subject=subject,
+        body=email_body
+    )
+    email.send()

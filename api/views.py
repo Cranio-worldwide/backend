@@ -1,14 +1,21 @@
+import jwt
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils.translation import get_language_from_request
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import Specialist
+from users.models import CustomUser, Specialist
 from .models import Address, Service, News
 from .serializers import (
     AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
     UserSerializer
 )
-from .utils import get_geodata, get_user_ip_address, parse_coordinates
+from .utils import (
+    get_geodata, get_user_ip_address, parse_coordinates,
+    send_verification_email
+)
 
 
 class SpecialistViewSet(viewsets.ModelViewSet):
@@ -63,14 +70,48 @@ class GeopositionViewSet(viewsets.ViewSet):
 
 
 class RegisterView(APIView):
-    """Viewset for users' authorization with JWT."""
+    """Viewset for users' registaration with JWT."""
+
+    serializer_class = UserSerializer
 
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(
-            {'data': serializer.errors},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        language = get_language_from_request(request, check_path=True)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        user = get_object_or_404(
+            CustomUser,
+            email=serializer.data['email'])
+
+        send_verification_email(request, user, language)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class VerifyEmail(APIView):
+    """Viewset for email verification with JWT."""
+
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            data = jwt.decode(token, settings.SECRET_KEY)
+            user = get_object_or_404(CustomUser, id=data['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+                data = {
+                    'email': settings.CONSTANTS['EMAIL_SUCCESS_MESSEGE']
+                }
+
+                return Response(data, status=status.HTTP_200_OK)
+
+        except jwt.ExpiredSignatureError:
+            data = {
+                'error': settings.CONSTANTS['TOKEN_EXPIRED']
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError:
+            data = {
+                'error': settings.CONSTANTS['TOKEN_INVALID']
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
