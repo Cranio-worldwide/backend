@@ -1,5 +1,5 @@
 import datetime as dt
-
+from django.utils.translation import get_language_from_request
 from rest_framework import serializers
 
 from users.models import Specialist
@@ -79,7 +79,7 @@ class StaticContentSerializer(serializers.ModelSerializer):
         lookup_field = 'name'
 
     def get_static_fields(self, obj):
-        language = self.context['request'].path[1:3]
+        language = get_language_from_request(self.context['request'])
         if language == 'en':
             return obj.fields_en
         return obj.fields_ru
