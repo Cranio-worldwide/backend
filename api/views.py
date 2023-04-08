@@ -29,22 +29,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
 
 
-# class CountryViewSet(viewsets.ReadOnlyModelViewSet):
-#     """Viewset for model Country. Adds/changes - through admin panel."""
-#     queryset = Country.objects.all()
-#     serializer_class = CountrySerializer
-
-
-# class CityViewSet(viewsets.ReadOnlyModelViewSet):
-#     """Viewset for model Country. Adds/changes - through admin panel."""
-#     serializer_class = CitySerializer
-
-#     def get_queryset(self):
-#       country = get_object_or_404(Country, pk=self.kwargs.get('country_id'))
-#         return country.cities.all()
-
-
-class NewsViewSet(viewsets.ModelViewSet):
+class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset for model News. Adds/changes - through admin panel."""
     serializer_class = NewsSerializer
     queryset = News.objects.all()
@@ -65,8 +50,3 @@ class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = StaticContentSerializer
     queryset = StaticContent.objects.all()
     lookup_field = 'name'
-
-    # def get_serializer_class(self):
-    #     if self.request.path[1:3] == 'en':
-    #         return EnStaticContentSerializer
-    #     return RuStaticContentSerializer
