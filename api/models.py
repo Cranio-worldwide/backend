@@ -66,36 +66,6 @@ class Service(models.Model):
         super(Service, self).save()
 
 
-# class Country(models.Model):
-#     """
-#     The model for countries for user geopositioning
-#     """
-#     name = models.CharField(max_length=100)
-
-#     def __str__(self):
-#         return self.name
-
-
-# class City(models.Model):
-#     """
-#     The model for cities for user geopositioning
-#     """
-#     name = models.CharField(max_length=100)
-#     country = models.ForeignKey(
-#         Country,
-#         on_delete=models.CASCADE,
-#         related_name='cities',
-#     )
-#     latitude = models.DecimalField(max_digits=9, decimal_places=6)
-#     longitude = models.DecimalField(max_digits=9, decimal_places=6)
-
-#     def __str__(self):
-#         return self.name
-
-#     def coordinates(self):
-#         return (float(self.latitude), float(self.longitude))
-
-
 class News(models.Model):
     """
     The model for news published by site staff

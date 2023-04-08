@@ -28,21 +28,7 @@ class StaticContentAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-# class CountryAdmin(TranslationAdmin):
-#     list_display = ('id', 'name_en', 'name_ru')
-#     search_fields = ('name_en', 'name_ru')
-#     empty_value_display = '-пусто-'
-
-
-# class CityAdmin(TranslationAdmin):
-#     list_display = ('id', 'name_en', 'name_ru', 'country')
-#     search_fields = ('name_en', 'name_ru', 'country')
-#     empty_value_display = '-пусто-'
-
-
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(StaticContent, StaticContentAdmin)
-# admin.site.register(Country, CountryAdmin)
-# admin.site.register(City, CityAdmin)
