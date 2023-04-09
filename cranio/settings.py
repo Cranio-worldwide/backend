@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='1')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['cranio-worldwide.tk']
+CSRF_TRUSTED_ORIGINS = ['*']
 
 INSTALLED_APPS = [
     'modeltranslation',
