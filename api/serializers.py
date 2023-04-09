@@ -28,6 +28,7 @@ class SpecialistSerializer(serializers.ModelSerializer):
 
 class AdressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
+
     class Meta:
         fields = (
             'specialists_id', 'loc_latitude', 'loc_longitude', 'description'
@@ -37,6 +38,7 @@ class AdressSerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for model Service."""
+
     class Meta:
         fields = (
             'specialists_id', 'name_service', 'price', 'currency',
@@ -47,6 +49,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     """Serializer for model News."""
+
     class Meta:
         fields = ('id', 'date', 'picture', 'description', 'published')
         model = News
@@ -102,4 +105,3 @@ class StaticContentSerializer(serializers.ModelSerializer):
         if language == 'en':
             return obj.fields_en
         return obj.fields_ru
-
