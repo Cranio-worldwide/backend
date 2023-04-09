@@ -36,7 +36,6 @@ def get_geodata(ip_address):
         )
     for endpoint in endpoints:
         response = requests.get(endpoint)
-        print(endpoint)
         if response.status_code == HTTPStatus.OK:
             return response.json()
     return None

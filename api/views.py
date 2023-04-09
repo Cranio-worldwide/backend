@@ -7,10 +7,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import Specialist
-from .models import Address, Service, News
+from .models import Address, Service, News, StaticContent
 from .serializers import (
     AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
-    SpecialistCreateSerializer
+    SpecialistCreateSerializer, StaticContentSerializer
 )
 from .utils import (
     get_geodata, get_user_ip_address, parse_coordinates,
@@ -37,29 +37,14 @@ class ServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
 
 
-# class CountryViewSet(viewsets.ReadOnlyModelViewSet):
-#     """Viewset for model Country. Adds/changes - through admin panel."""
-#     queryset = Country.objects.all()
-#     serializer_class = CountrySerializer
-
-
-# class CityViewSet(viewsets.ReadOnlyModelViewSet):
-#     """Viewset for model Country. Adds/changes - through admin panel."""
-#     serializer_class = CitySerializer
-
-#     def get_queryset(self):
-#       country = get_object_or_404(Country, pk=self.kwargs.get('country_id'))
-#         return country.cities.all()
-
-
-class NewsViewSet(viewsets.ModelViewSet):
+class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset for model News. Adds/changes - through admin panel."""
     serializer_class = NewsSerializer
     queryset = News.objects.all()
 
 
 class GeopositionViewSet(viewsets.ViewSet):
-    """Viewset for retrieving user geoposition by IP-address from request"""
+    """Viewset for reciept of user geoposition by IP-address"""
 
     def list(self, request):
         ip_address = get_user_ip_address(request)
@@ -71,7 +56,7 @@ class GeopositionViewSet(viewsets.ViewSet):
 
 class RegisterView(APIView):
     """Viewset for users' registaration with JWT."""
-
+    
     serializer_class = SpecialistCreateSerializer
 
     def post(self, request):
@@ -90,7 +75,7 @@ class RegisterView(APIView):
 
 class VerifyEmail(APIView):
     """Viewset for email verification with JWT."""
-
+    
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -115,3 +100,11 @@ class VerifyEmail(APIView):
                 'error': settings.CONSTANTS['TOKEN_INVALID']
             }
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
+    """Viewset for transfer of multilingual static content to frontend"""
+    serializer_class = StaticContentSerializer
+    queryset = StaticContent.objects.all()
+    lookup_field = 'name'
+

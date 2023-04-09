@@ -1,9 +1,10 @@
 import datetime as dt
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.utils.translation import get_language_from_request
 from rest_framework import serializers
 
-from .models import Address, News, Service
+from .models import Address, News, Service, StaticContent
 from users.models import Specialist
 
 
@@ -42,25 +43,6 @@ class ServiceSerializer(serializers.ModelSerializer):
             'description'
         )
         model = Service
-
-
-# class CountrySerializer(serializers.ModelSerializer):
-#     """Serializer for model Country."""
-#     class Meta:
-#         fields = ('id', 'name')
-#         model = Country
-
-
-# class CitySerializer(serializers.ModelSerializer):
-#     """Serializer for model City."""
-#     coordinates = serializers.SerializerMethodField()
-
-#     class Meta:
-#         fields = ('id', 'name', 'coordinates')
-#         model = City
-
-#     def get_coordinates(self, obj):
-#         return f'{obj.latitude}, {obj.longitude}'
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -104,3 +86,20 @@ class SpecialistCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class StaticContentSerializer(serializers.ModelSerializer):
+    """Serializer for model StaticContent."""
+    static_fields = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('name', 'static_fields')
+        model = StaticContent
+        lookup_field = 'name'
+
+    def get_static_fields(self, obj):
+        language = get_language_from_request(self.context['request'])
+        if language == 'en':
+            return obj.fields_en
+        return obj.fields_ru
+

@@ -18,16 +18,6 @@ class ServiceTranslationOptions(TranslationOptions):
     fields = ('name_service', 'description')
 
 
-# @register(Country)
-# class CountryTranslationOptions(TranslationOptions):
-#     fields = ('name',)
-
-
-# @register(City)
-# class CityTranslationOptions(TranslationOptions):
-#     fields = ('name',)
-
-
 @register(News)
 class NewsTranslationOptions(TranslationOptions):
     fields = ('description',)

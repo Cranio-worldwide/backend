@@ -1,7 +1,7 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 
-from .models import Address, Service, News
+from .models import Address, Service, News, StaticContent
 
 
 class AddressAdmin(TranslationAdmin):
@@ -22,20 +22,13 @@ class NewsAdmin(TranslationAdmin):
     empty_value_display = '-пусто-'
 
 
-# class CountryAdmin(TranslationAdmin):
-#     list_display = ('id', 'name_en', 'name_ru')
-#     search_fields = ('name_en', 'name_ru')
-#     empty_value_display = '-пусто-'
-
-
-# class CityAdmin(TranslationAdmin):
-#     list_display = ('id', 'name_en', 'name_ru', 'country')
-#     search_fields = ('name_en', 'name_ru', 'country')
-#     empty_value_display = '-пусто-'
+class StaticContentAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    empty_value_display = '-пусто-'
 
 
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(News, NewsAdmin)
-# admin.site.register(Country, CountryAdmin)
-# admin.site.register(City, CityAdmin)
+admin.site.register(StaticContent, StaticContentAdmin)
