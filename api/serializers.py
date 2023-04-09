@@ -1,9 +1,11 @@
 import datetime as dt
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.utils.translation import get_language_from_request
 from rest_framework import serializers
 
+from .models import Address, News, Service, StaticContent
 from users.models import Specialist
-from .models import Address, Service, News, StaticContent
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
@@ -50,6 +52,42 @@ class NewsSerializer(serializers.ModelSerializer):
         model = News
 
 
+class SpecialistCreateSerializer(serializers.ModelSerializer):
+    """Serializer for users' authentification."""
+
+    class Meta:
+        model = Specialist
+        fields = (
+            'id', 'email', 'password',
+            'first_name', 'last_name', 'photo',
+            'about', 'phone', 'beginning_of_the_experience',
+            'diploma', 'address', 'service'
+        )
+        extra_kwargs = {
+            'email': {'required': True},
+            'password': {'required': True,
+                         'write_only': True},
+        }
+
+    def validate_password(self, data):
+        try:
+            validate_password(data)
+        except ValidationError as exc:
+            raise serializers.ValidationError(str(exc))
+        return data
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        address = validated_data.pop('address')
+        service = validated_data.pop('service')
+        user = Specialist.objects.create(**validated_data)
+        user.address.set(address)
+        user.service.set(service)
+        user.set_password(password)
+        user.save()
+        return user
+
+
 class StaticContentSerializer(serializers.ModelSerializer):
     """Serializer for model StaticContent."""
     static_fields = serializers.SerializerMethodField()
@@ -64,3 +102,4 @@ class StaticContentSerializer(serializers.ModelSerializer):
         if language == 'en':
             return obj.fields_en
         return obj.fields_ru
+
