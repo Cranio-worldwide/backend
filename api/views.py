@@ -23,7 +23,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
                         mixins.DestroyModelMixin, mixins.ListModelMixin,
                         GenericViewSet):
     """ViewSet for model Specialists."""
-    queryset = Specialist.objects.all()
+    queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = SpecialistSerializer
 
 
