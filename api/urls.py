@@ -10,8 +10,10 @@ from .views import (AdressViewSet, SpecialistViewSet, ServiceViewSet,
 
 router = DefaultRouter()
 router.register('specialists', SpecialistViewSet, basename='specialists')
-router.register('address', AdressViewSet, basename='address')
-router.register('services', ServiceViewSet, basename='services')
+router.register(r'specialists/(?P<specialist_id>\d+)/addresses', AdressViewSet,
+                basename='addresses')
+router.register(r'specialists/(?P<specialist_id>\d+)/services', ServiceViewSet,
+                basename='services')
 router.register('news', NewsViewSet, basename='news'),
 router.register('me', GeopositionViewSet, basename='me')
 router.register('static', StaticContentViewSet, basename='static')

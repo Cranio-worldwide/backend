@@ -8,31 +8,11 @@ from .models import Address, News, Service, StaticContent
 from users.models import Specialist
 
 
-class SpecialistSerializer(serializers.ModelSerializer):
-    """Serializer for model Specialists."""
-    address = serializers.StringRelatedField(many=True, read_only=True)
-    service = serializers.StringRelatedField(many=True, read_only=True)
-    total_experience = serializers.SerializerMethodField()
-
-    class Meta:
-        fields = (
-            'id', 'first_name', 'last_name', 'email', 'photo',
-            'about', 'phone', 'beginning_of_the_experience',
-            'total_experience', 'diploma', 'address', 'service'
-        )
-        model = Specialist
-
-    def get_total_experience(self, obj):
-        return dt.datetime.now().year - obj.beginning_of_the_experience
-
-
 class AdressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
 
     class Meta:
-        fields = (
-            'specialists_id', 'loc_latitude', 'loc_longitude', 'description'
-        )
+        fields = ('id', 'loc_latitude', 'loc_longitude', 'description')
         model = Address
 
 
@@ -40,11 +20,26 @@ class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for model Service."""
 
     class Meta:
-        fields = (
-            'specialists_id', 'name_service', 'price', 'currency',
-            'description'
-        )
+        fields = ('id', 'name_service', 'price', 'currency', 'description')
         model = Service
+
+
+class SpecialistSerializer(serializers.ModelSerializer):
+    """Serializer for model Specialists."""
+    addresses = AdressSerializer(many=True, read_only=True)
+    services = ServiceSerializer(many=True, read_only=True)
+    total_experience = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = (
+            'id', 'first_name', 'last_name', 'email', 'photo',
+            'about', 'phone', 'beginning_of_the_experience',
+            'total_experience', 'diploma', 'addresses', 'services'
+        )
+        model = Specialist
+
+    def get_total_experience(self, obj):
+        return dt.datetime.now().year - obj.beginning_of_the_experience
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -102,6 +97,6 @@ class StaticContentSerializer(serializers.ModelSerializer):
 
     def get_static_fields(self, obj):
         language = get_language_from_request(self.context['request'])
-        if language == 'en':
-            return obj.fields_en
-        return obj.fields_ru
+        if language == 'ru':
+            return obj.fields_ru
+        return obj.fields_en
