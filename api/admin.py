@@ -5,14 +5,14 @@ from .models import Address, Service, News, StaticContent
 
 
 class AddressAdmin(TranslationAdmin):
-    list_display = ('id', 'specialists_id', 'loc_latitude', 'loc_longitude', )
-    search_fields = ('id', 'specialists_id', 'loc_latitude', 'loc_longitude')
+    list_display = ('id', 'specialist', 'loc_latitude', 'loc_longitude', )
+    search_fields = ('id', 'specialist', 'loc_latitude', 'loc_longitude')
     empty_value_display = '-пусто-'
 
 
 class ServiceAdmin(TranslationAdmin):
-    list_display = ('specialists_id', 'name_service', 'price', 'currency')
-    search_fields = ('specialists_id', 'name_service', 'price', 'currency')
+    list_display = ('specialist', 'name_service', 'price', 'currency')
+    search_fields = ('specialist', 'name_service', 'price', 'currency')
     empty_value_display = '-пусто-'
 
 

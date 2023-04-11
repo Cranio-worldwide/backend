@@ -3,15 +3,17 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
-from .views import (AdressViewSet, SpecialistViewSet, ServiceViewSet,
+from .views import (AddressViewSet, SpecialistViewSet, ServiceViewSet,
                     NewsViewSet, GeopositionViewSet, RegisterView, VerifyEmail,
                     StaticContentViewSet)
 
 
 router = DefaultRouter()
 router.register('specialists', SpecialistViewSet, basename='specialists')
-router.register('address', AdressViewSet, basename='address')
-router.register('services', ServiceViewSet, basename='services')
+router.register(r'specialists/(?P<specialist_id>\d+)/addresses',
+                AddressViewSet, basename='addresses')
+router.register(r'specialists/(?P<specialist_id>\d+)/services',
+                ServiceViewSet, basename='services')
 router.register('news', NewsViewSet, basename='news'),
 router.register('me', GeopositionViewSet, basename='me')
 router.register('static', StaticContentViewSet, basename='static')

@@ -9,9 +9,9 @@ class Address(models.Model):
     """
     The model for describing the place of reception of a specialist
     """
-    specialists_id = models.ForeignKey(
+    specialist = models.ForeignKey(
         Specialist,
-        related_name='address',
+        related_name='addresses',
         on_delete=models.CASCADE
     )
     loc_latitude = models.DecimalField(max_digits=9, decimal_places=6)
@@ -40,9 +40,9 @@ class Service(models.Model):
         (EUR, EUR),
         (RUB, RUB)
     )
-    specialists_id = models.ForeignKey(
+    specialist = models.ForeignKey(
         Specialist,
-        related_name='service',
+        related_name='services',
         on_delete=models.CASCADE
     )
     name_service = models.CharField(

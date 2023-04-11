@@ -1,4 +1,4 @@
-﻿id;specialists_id_id;name_service;name_service_en;name_service_ru;price;currency
+﻿id;specialist_id;name_service;name_service_en;name_service_ru;price;currency
 1;100;Visiting a specialist;Visiting a specialist;Прием врача;1000;RUB
 2;101;Visiting a specialist;Visiting a specialist;Прием врача;1500;RUB
 3;102;Visiting a specialist;Visiting a specialist;Прием врача;2000;RUB

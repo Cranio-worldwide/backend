@@ -2,14 +2,15 @@ import jwt
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import get_language_from_request
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
 from users.models import Specialist
-from .models import Address, Service, News, StaticContent
+from .models import News, StaticContent
 from .serializers import (
-    AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
+    AddressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
     SpecialistCreateSerializer, StaticContentSerializer
 )
 from .utils import (
@@ -18,23 +19,38 @@ from .utils import (
 )
 
 
-class SpecialistViewSet(viewsets.ModelViewSet):
+class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin, mixins.ListModelMixin,
+                        GenericViewSet):
     """ViewSet for model Specialists."""
-
-    queryset = Specialist.objects.all()
+    queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = SpecialistSerializer
 
 
-class AdressViewSet(viewsets.ModelViewSet):
+class AbstractAttributeViewSet(viewsets.ModelViewSet):
+    """Abstract class for Spec attributes: Addresses & Services"""
+    def get_specialist(self):
+        return get_object_or_404(Specialist,
+                                 pk=self.kwargs.get('specialist_id'))
+
+    def perform_create(self, serializer):
+        serializer.save(specialist=self.get_specialist())
+
+
+class AddressViewSet(AbstractAttributeViewSet):
     """ViewSet for model Address."""
-    queryset = Address.objects.all()
-    serializer_class = AdressSerializer
+    serializer_class = AddressSerializer
+
+    def get_queryset(self):
+        return self.get_specialist().addresses.all()
 
 
-class ServiceViewSet(viewsets.ModelViewSet):
+class ServiceViewSet(AbstractAttributeViewSet):
     """ViewSet for model Service."""
-    queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+
+    def get_queryset(self):
+        return self.get_specialist().services.all()
 
 
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
