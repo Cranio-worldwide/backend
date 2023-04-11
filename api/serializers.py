@@ -8,7 +8,7 @@ from .models import Address, News, Service, StaticContent
 from users.models import Specialist
 
 
-class AdressSerializer(serializers.ModelSerializer):
+class AddressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
 
     class Meta:
@@ -26,7 +26,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class SpecialistSerializer(serializers.ModelSerializer):
     """Serializer for model Specialists."""
-    addresses = AdressSerializer(many=True, read_only=True)
+    addresses = AddressSerializer(many=True, read_only=True)
     services = ServiceSerializer(many=True, read_only=True)
     total_experience = serializers.SerializerMethodField()
 
@@ -97,6 +97,7 @@ class StaticContentSerializer(serializers.ModelSerializer):
 
     def get_static_fields(self, obj):
         language = get_language_from_request(self.context['request'])
-        if language == 'ru':
-            return obj.fields_ru
+        field_name = f'fields_{language}'
+        if hasattr(obj, field_name):
+            return getattr(obj, field_name)
         return obj.fields_en

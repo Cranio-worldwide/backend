@@ -10,7 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 from users.models import Specialist
 from .models import News, StaticContent
 from .serializers import (
-    AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
+    AddressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
     SpecialistCreateSerializer, StaticContentSerializer
 )
 from .utils import (
@@ -27,34 +27,30 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
     serializer_class = SpecialistSerializer
 
 
-class AdressViewSet(viewsets.ModelViewSet):
-    """ViewSet for model Address."""
-    serializer_class = AdressSerializer
-
+class AbstractAttributeViewSet(viewsets.ModelViewSet):
+    """Abstract class for Spec attributes: Addresses & Services"""
     def get_specialist(self):
         return get_object_or_404(Specialist,
                                  pk=self.kwargs.get('specialist_id'))
+
+    def perform_create(self, serializer):
+        serializer.save(specialist=self.get_specialist())
+
+
+class AddressViewSet(AbstractAttributeViewSet):
+    """ViewSet for model Address."""
+    serializer_class = AddressSerializer
 
     def get_queryset(self):
         return self.get_specialist().addresses.all()
 
-    def perform_create(self, serializer):
-        serializer.save(specialist=self.get_specialist())
 
-
-class ServiceViewSet(viewsets.ModelViewSet):
+class ServiceViewSet(AbstractAttributeViewSet):
     """ViewSet for model Service."""
     serializer_class = ServiceSerializer
 
-    def get_specialist(self):
-        return get_object_or_404(Specialist,
-                                 pk=self.kwargs.get('specialist_id'))
-
     def get_queryset(self):
         return self.get_specialist().services.all()
-
-    def perform_create(self, serializer):
-        serializer.save(specialist=self.get_specialist())
 
 
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
