@@ -26,6 +26,7 @@ jobs:
           tags: ghcr.io/cranio-worldwide/backend:latest
   deploy:
     name: Run update backend container
+    needs: build_and_push_container
     uses: Cranio-worldwide/deploy/.github/workflows/main.yml@main
     with:
       project: backend
