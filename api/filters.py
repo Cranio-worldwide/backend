@@ -13,5 +13,5 @@ class StaticContentFilter(filters.FilterSet):
         name_filter = self.form.cleaned_data.get('name')
         if name_filter:
             values = name_filter.split(',')
-            queryset = queryset.filter(name__in=values)
+            return queryset.filter(name__in=values)
         return queryset
