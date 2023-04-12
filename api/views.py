@@ -2,12 +2,14 @@ import jwt
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import get_language_from_request
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from users.models import Specialist
+from .filters import StaticContentFilter
 from .models import News, StaticContent
 from .serializers import (
     AddressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
@@ -119,7 +121,11 @@ class VerifyEmail(APIView):
 
 
 class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
-    """Viewset for transfer of multilingual static content to frontend"""
+    """Viewset for transfer of multilingual static content to frontend
+       Filtering via 'name' parameter: use comma(',') for multiple filter
+    """
     serializer_class = StaticContentSerializer
     queryset = StaticContent.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = StaticContentFilter
     lookup_field = 'name'
