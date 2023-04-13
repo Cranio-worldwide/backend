@@ -69,5 +69,5 @@ class SearchFilter(filters.FilterSet):
         if min_price_filter:
             queryset = queryset.filter(max_price__gte=min_price_filter)
         if max_price_filter:
-            queryset = queryset.filter(min_price__lte=max_price_filter)
+            return queryset.filter(min_price__lte=max_price_filter)
         return queryset
