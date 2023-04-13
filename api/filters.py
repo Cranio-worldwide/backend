@@ -1,6 +1,11 @@
+from math import cos, pi
+
+from django.conf import settings
+from django.db.models import F, IntegerField, Min, Max
+from django.db.models.functions import Sqrt
 from django_filters import rest_framework as filters
 
-from api.models import StaticContent
+from api.models import Address, StaticContent
 
 
 class StaticContentFilter(filters.FilterSet):
@@ -14,4 +19,55 @@ class StaticContentFilter(filters.FilterSet):
         if name_filter:
             values = name_filter.split(',')
             return queryset.filter(name__in=values)
+        return queryset
+
+
+class SearchFilter(filters.FilterSet):
+    """Filter for search of specialists"""
+    radius = filters.NumberFilter()
+    coordinates = filters.CharFilter()
+    min_price = filters.NumberFilter()
+    max_price = filters.NumberFilter()
+
+    class Meta:
+        model = Address
+        fields = ('radius', 'coordinates', 'min_price', 'max_price')
+
+    def filter_queryset(self, queryset):
+        radius = int(self.request.query_params.get(
+            'radius', settings.DEFAULT_SEARCH_RADIUS
+        ))
+        try:
+            coordinates = self.request.query_params.get('coordinates')
+            point_lat, point_lon = [float(coord.strip()) for coord in
+                                    coordinates.split(',')]
+        except (ValueError, AttributeError):
+            raise ValueError('Please enter coordinates separated by comma')
+        radius_in_degree = radius / settings.KM_IN_DEGREE
+        km_in_lon_degree = cos(point_lat / 180 * pi) * settings.KM_IN_DEGREE
+        queryset = (queryset.filter(
+            loc_latitude__gt=(point_lat - radius_in_degree),
+            loc_latitude__lt=(point_lat + radius_in_degree),
+            loc_longitude__gt=(point_lon - radius_in_degree),
+            loc_longitude__lt=(point_lon + radius_in_degree),
+        ).annotate(distance=Sqrt(
+            (
+                (F('loc_latitude') - point_lat) * settings.KM_IN_DEGREE
+            ) ** 2 + (
+                (F('loc_longitude') - point_lon) * km_in_lon_degree
+            ) ** 2,
+            output_field=IntegerField()
+        )).
+            select_related('specialist').
+            prefetch_related('specialist__services', 'specialist__addresses').
+            annotate(min_price=Min('specialist__services__price')).
+            annotate(max_price=Max('specialist__services__price')).
+            order_by('distance'))
+
+        min_price_filter = self.request.query_params.get('min_price')
+        max_price_filter = self.request.query_params.get('max_price')
+        if min_price_filter:
+            queryset = queryset.filter(max_price__gte=min_price_filter)
+        if max_price_filter:
+            queryset = queryset.filter(min_price__lte=max_price_filter)
         return queryset

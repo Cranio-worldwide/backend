@@ -7,13 +7,14 @@ from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import Specialist
-from .filters import StaticContentFilter
-from .models import News, StaticContent
+from .filters import StaticContentFilter, SearchFilter
+from .models import News, StaticContent, Address
 from .serializers import (
     AddressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
-    SpecialistCreateSerializer, StaticContentSerializer
+    SpecialistCreateSerializer, StaticContentSerializer, SearchSerializer
 )
 from .utils import (
     get_geodata, get_user_ip_address, parse_coordinates,
@@ -129,3 +130,17 @@ class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = StaticContentFilter
     lookup_field = 'name'
+
+
+class SearchList(mixins.ListModelMixin, GenericViewSet):
+    """Viewset for search of specialists
+       Available options for filtering:
+       coordinates (obligatory) - 2 coordniates separated by comma
+       radius (optional) - search radiuse in km, default is set in settings
+       min_price & max_price - lower & upper limits of price
+    """
+    serializer_class = SearchSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = SearchFilter
+    queryset = Address.objects.all()
+    pagination_class = LimitOffsetPagination
