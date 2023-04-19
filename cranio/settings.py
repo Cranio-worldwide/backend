@@ -156,6 +156,3 @@ CONSTANTS = {
     'TOKEN_EXPIRED': 'Activation link expired',
     'TOKEN_INVALID': 'Invalid token',
 }
-
-DEFAULT_SEARCH_RADIUS = 20
-KM_IN_DEGREE = 111.134861111

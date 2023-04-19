@@ -1,11 +1,11 @@
 from math import cos, pi
 
-from django.conf import settings
-from django.db.models import F, IntegerField, Min, Max
+from django.db.models import DecimalField, F, Min, Max
 from django.db.models.functions import Sqrt
 from django_filters import rest_framework as filters
 
 from api.models import Address, StaticContent
+from cranio.consts import DEFAULT_SEARCH_RADIUS, HALF_CIRCLE, KM_IN_DEGREE
 
 
 class StaticContentFilter(filters.FilterSet):
@@ -35,16 +35,15 @@ class SearchFilter(filters.FilterSet):
 
     def filter_queryset(self, queryset):
         radius = int(self.request.query_params.get(
-            'radius', settings.DEFAULT_SEARCH_RADIUS
+            'radius', DEFAULT_SEARCH_RADIUS
         ))
         try:
             coordinates = self.request.query_params.get('coordinates')
-            point_lat, point_lon = [float(coord.strip()) for coord in
-                                    coordinates.split(',')]
+            point_lat, point_lon = map(float, coordinates.split(','))
         except (ValueError, AttributeError):
             raise ValueError('Please enter coordinates separated by comma')
-        radius_in_degree = radius / settings.KM_IN_DEGREE
-        km_in_lon_degree = cos(point_lat / 180 * pi) * settings.KM_IN_DEGREE
+        radius_in_degree = radius / KM_IN_DEGREE
+        km_in_lon_degree = cos(point_lat / HALF_CIRCLE * pi) * KM_IN_DEGREE
         queryset = (queryset.filter(
             loc_latitude__gt=(point_lat - radius_in_degree),
             loc_latitude__lt=(point_lat + radius_in_degree),
@@ -52,11 +51,11 @@ class SearchFilter(filters.FilterSet):
             loc_longitude__lt=(point_lon + radius_in_degree),
         ).annotate(distance=Sqrt(
             (
-                (F('loc_latitude') - point_lat) * settings.KM_IN_DEGREE
+                (F('loc_latitude') - point_lat) * KM_IN_DEGREE
             ) ** 2 + (
                 (F('loc_longitude') - point_lon) * km_in_lon_degree
             ) ** 2,
-            output_field=IntegerField()
+            output_field=DecimalField(max_digits=4, decimal_places=1)
         )).
             select_related('specialist').
             prefetch_related('specialist__services', 'specialist__addresses').
