@@ -32,9 +32,9 @@ class SpecialistSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'id', 'first_name', 'last_name', 'email', 'photo',
-            'about', 'phone', 'beginning_of_the_experience',
-            'total_experience', 'diploma', 'addresses', 'services'
+            'id', 'first_name', 'last_name', 'email', 'photo', 'about',
+            'phone', 'beginning_of_the_experience', 'total_experience',
+            'diploma', 'addresses', 'services',
         )
         model = Specialist
 
@@ -101,3 +101,17 @@ class StaticContentSerializer(serializers.ModelSerializer):
         if hasattr(obj, field_name):
             return getattr(obj, field_name)
         return obj.fields_en
+
+
+class SearchSerializer(serializers.ModelSerializer):
+    """Serializer for """
+    specialist = SpecialistSerializer(read_only=True)
+    distance = serializers.DecimalField(max_digits=4, decimal_places=1,
+                                        read_only=True)
+    min_price = serializers.IntegerField(read_only=True)
+    max_price = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        fields = ('loc_latitude', 'loc_longitude', 'min_price', 'max_price',
+                  'distance', 'specialist')
+        model = Address

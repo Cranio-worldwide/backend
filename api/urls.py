@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
 
 from .views import (AddressViewSet, SpecialistViewSet, ServiceViewSet,
                     NewsViewSet, GeopositionViewSet, RegisterView, VerifyEmail,
-                    StaticContentViewSet)
+                    StaticContentViewSet, SearchList)
 
 
 router = DefaultRouter()
@@ -17,6 +17,7 @@ router.register(r'specialists/(?P<specialist_id>\d+)/services',
 router.register('news', NewsViewSet, basename='news'),
 router.register('me', GeopositionViewSet, basename='me')
 router.register('static', StaticContentViewSet, basename='static')
+router.register('search', SearchList, basename='search')
 
 
 auth_patterns = [
