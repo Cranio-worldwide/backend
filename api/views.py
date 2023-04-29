@@ -56,7 +56,7 @@ class GeopositionViewSet(viewsets.ViewSet):
 
 class RegisterView(APIView):
     """Viewset for users' registaration with JWT."""
-    
+
     serializer_class = SpecialistCreateSerializer
 
     def post(self, request):
@@ -75,7 +75,7 @@ class RegisterView(APIView):
 
 class VerifyEmail(APIView):
     """Viewset for email verification with JWT."""
-    
+
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -107,4 +107,3 @@ class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = StaticContentSerializer
     queryset = StaticContent.objects.all()
     lookup_field = 'name'
-
