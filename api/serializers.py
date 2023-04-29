@@ -2,7 +2,9 @@ import datetime as dt
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import get_language_from_request
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from .models import Address, News, Service, StaticContent
 from users.models import Specialist
@@ -28,6 +30,7 @@ class SpecialistSerializer(serializers.ModelSerializer):
 
 class AdressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
+
     class Meta:
         fields = (
             'specialists_id', 'loc_latitude', 'loc_longitude', 'description'
@@ -37,6 +40,7 @@ class AdressSerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for model Service."""
+
     class Meta:
         fields = (
             'specialists_id', 'name_service', 'price', 'currency',
@@ -54,14 +58,20 @@ class NewsSerializer(serializers.ModelSerializer):
 
 class SpecialistCreateSerializer(serializers.ModelSerializer):
     """Serializer for users' authentification."""
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=Specialist.objects.all())])
+    photo = Base64ImageField(
+        max_length=None,
+        required=False,
+        use_url=True)
 
     class Meta:
         model = Specialist
         fields = (
             'id', 'email', 'password',
             'first_name', 'last_name', 'photo',
-            'about', 'phone', 'beginning_of_the_experience',
-            'diploma', 'address', 'service'
+            'about', 'phone', 'beginning_of_the_experience', 'diploma'
         )
         extra_kwargs = {
             'email': {'required': True},
@@ -78,11 +88,7 @@ class SpecialistCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        address = validated_data.pop('address')
-        service = validated_data.pop('service')
         user = Specialist.objects.create(**validated_data)
-        user.address.set(address)
-        user.service.set(service)
         user.set_password(password)
         user.save()
         return user
@@ -102,4 +108,3 @@ class StaticContentSerializer(serializers.ModelSerializer):
         if language == 'en':
             return obj.fields_en
         return obj.fields_ru
-

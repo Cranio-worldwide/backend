@@ -61,7 +61,7 @@ class Specialist(CustomUser):
         upload_to='media/%Y-%m-%d'
     )
     about = models.TextField(blank=True)
-    phone = models.CharField(max_length=17, unique=True)
+    phone = models.CharField(max_length=17, unique=True, blank=True)
     beginning_of_the_experience = models.PositiveSmallIntegerField(
         blank=True, null=True,
         validators=[MinValueValidator(1923),
