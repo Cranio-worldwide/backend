@@ -5,7 +5,8 @@ from django.db.models.functions import Sqrt
 from django_filters import rest_framework as filters
 
 from api.models import Address, StaticContent
-from cranio.consts import DEFAULT_SEARCH_RADIUS, HALF_CIRCLE, KM_IN_DEGREE
+from cranio.consts import (DEFAULT_SEARCH_RADIUS, HALF_CIRCLE, KM_IN_DEGREE,
+                           MAX_SEARCH_RADIUS)
 
 
 class StaticContentFilter(filters.FilterSet):
@@ -34,9 +35,9 @@ class SearchFilter(filters.FilterSet):
         fields = ('radius', 'coordinates', 'min_price', 'max_price')
 
     def filter_queryset(self, queryset):
-        radius = int(self.request.query_params.get(
+        radius = min(int(self.request.query_params.get(
             'radius', DEFAULT_SEARCH_RADIUS
-        ))
+        )), MAX_SEARCH_RADIUS)
         try:
             coordinates = self.request.query_params.get('coordinates')
             point_lat, point_lon = map(float, coordinates.split(','))

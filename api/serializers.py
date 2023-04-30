@@ -1,6 +1,8 @@
+import base64
 import datetime as dt
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.utils.translation import get_language_from_request
 from rest_framework import serializers
 
@@ -24,17 +26,28 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
 
 
+class Base64ImageField(serializers.ImageField):
+    """Custom serializer field for User's photo."""
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        return super().to_internal_value(data)
+
+
 class SpecialistSerializer(serializers.ModelSerializer):
     """Serializer for model Specialists."""
     addresses = AddressSerializer(many=True, read_only=True)
     services = ServiceSerializer(many=True, read_only=True)
     total_experience = serializers.SerializerMethodField()
+    photo = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         fields = (
             'id', 'first_name', 'last_name', 'email', 'photo', 'about',
             'phone', 'beginning_of_the_experience', 'total_experience',
-            'diploma', 'addresses', 'services',
+            'addresses', 'services', 'diploma_issuer', 'diploma_recipient'
         )
         model = Specialist
 
@@ -59,7 +72,7 @@ class SpecialistCreateSerializer(serializers.ModelSerializer):
             'id', 'email', 'password',
             'first_name', 'last_name', 'photo',
             'about', 'phone', 'beginning_of_the_experience',
-            'diploma', 'address', 'service'
+            'address', 'service'
         )
         extra_kwargs = {
             'email': {'required': True},

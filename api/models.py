@@ -31,26 +31,25 @@ class Service(models.Model):
     """
     The model for describing the services and prices of a specialist
     """
-    USD = _('USD')
-    EUR = _('EUR')
-    RUB = _('RUB')
+    USD = 'USD'
+    EUR = 'EUR'
+    RUB = 'RUB'
 
     CURRENCY_CHOICES = (
-        (USD, USD),
-        (EUR, EUR),
-        (RUB, RUB)
+        (USD, _('USD')),
+        (EUR, _('EUR')),
+        (RUB, _('RUB'))
     )
     specialist = models.ForeignKey(
         Specialist,
         related_name='services',
         on_delete=models.CASCADE
     )
-    name_service = models.CharField(
-        max_length=80, default=_("Specialist's appointment"))
+    name_service = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     price = models.PositiveIntegerField()
     currency = models.CharField(
-        max_length=50,
+        max_length=5,
         choices=CURRENCY_CHOICES,
         default=USD
     )

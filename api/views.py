@@ -23,8 +23,7 @@ from .utils import (
 
 
 class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                        mixins.DestroyModelMixin, mixins.ListModelMixin,
-                        GenericViewSet):
+                        mixins.DestroyModelMixin, GenericViewSet):
     """ViewSet for model Specialists."""
     queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = SpecialistSerializer
@@ -135,9 +134,9 @@ class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
 class SearchList(mixins.ListModelMixin, GenericViewSet):
     """Viewset for search of specialists
        Available options for filtering:
-       coordinates (obligatory) - 2 coordniates separated by comma
-       radius (optional) - search radiuse in km, default is set in settings
-       min_price & max_price - lower & upper limits of price
+       coordinates (obligatory) - 2 coordniates separated by comma;
+       radius (optional) - search radius in km, default 50 km, max 150 km;
+       min_price & max_price - lower & upper limits of price.
     """
     serializer_class = SearchSerializer
     filter_backends = [DjangoFilterBackend]
