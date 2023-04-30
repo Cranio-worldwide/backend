@@ -31,6 +31,16 @@ docker-compose exec backend python manage.py import_csv
 >>> json with translation of static content for frontend
 docker-compose exec backend python manage.py import_json
 ```
+### .env file template
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY='djangosercretkey!!1'
+```
 ### API Documentation
 http://127.0.0.1:8000/redoc/
 http://127.0.0.1:8000/swagger/
