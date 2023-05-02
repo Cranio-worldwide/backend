@@ -117,7 +117,7 @@ class StaticContentSerializer(serializers.ModelSerializer):
 
 
 class SearchSerializer(serializers.ModelSerializer):
-    """Serializer for """
+    """Serializer for search of specialists nearby."""
     specialist = SpecialistSerializer(read_only=True)
     distance = serializers.DecimalField(max_digits=4, decimal_places=1,
                                         read_only=True)
