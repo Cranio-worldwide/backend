@@ -1,12 +1,20 @@
+from http import HTTPStatus
+from math import cos, pi
+
 import requests
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
+from django.db.models import DecimalField, F, Max, Min
+from django.db.models.functions import Sqrt
 from django.urls import reverse
 from googletrans import Translator
-from http import HTTPStatus
+from rest_framework.exceptions import ParseError
 from rest_framework_simplejwt.tokens import RefreshToken
 from transliterate import translit
+
+from cranio.consts import (DEFAULT_SEARCH_RADIUS, HALF_CIRCLE, KM_IN_DEGREE,
+                           MAX_SEARCH_RADIUS)
 
 
 def get_user_ip_address(request):
@@ -39,18 +47,6 @@ def get_geodata(ip_address):
         if response.status_code == HTTPStatus.OK:
             return response.json()
     return None
-
-
-# def parse_geodata(request, geodata):
-#     city, country = geodata.get('city'), geodata.get('country_name')
-#     coordinates = f"{geodata.get('latitude')}, {geodata.get('longitude')}"
-#     lang_prefix = request.path[1:3]
-#     if lang_prefix != 'en':
-#         translator = Translator()
-#         location = f"{geodata.get('city')}|{geodata.get('country_name')}"
-#         location = translator.translate(location, dest=lang_prefix)
-#         city, country = [name.strip() for name in location.text.split('|')]
-#     return city, country, coordinates
 
 
 def parse_coordinates(geodata):
@@ -102,3 +98,52 @@ def send_verification_email(request, user, language):
         body=email_body
     )
     email.send()
+
+
+def filter_qs(queryset, query_params):
+    try:
+        radius = int(query_params.get(
+            'radius', DEFAULT_SEARCH_RADIUS
+        ))
+        assert radius <= MAX_SEARCH_RADIUS
+        assert radius > 0
+    except (ValueError, AssertionError):
+        raise ParseError(
+            f'Enter radius as integer in range from 1 to {MAX_SEARCH_RADIUS}'
+        )
+    try:
+        coordinates = query_params.get('coordinates')
+        point_lat, point_lon = map(float, coordinates.split(','))
+    except (ValueError, AttributeError):
+        raise ParseError('Enter laitude & longitude separated by comma.')
+    radius_in_degree = radius / KM_IN_DEGREE
+    km_in_lon_degree = cos(point_lat / HALF_CIRCLE * pi) * KM_IN_DEGREE
+    queryset = (queryset.filter(
+        loc_latitude__gt=(point_lat - radius_in_degree),
+        loc_latitude__lt=(point_lat + radius_in_degree),
+        loc_longitude__gt=(point_lon - radius_in_degree),
+        loc_longitude__lt=(point_lon + radius_in_degree),
+    ).annotate(distance=Sqrt(
+        (
+            (F('loc_latitude') - point_lat) * KM_IN_DEGREE
+        ) ** 2 + (
+            (F('loc_longitude') - point_lon) * km_in_lon_degree
+        ) ** 2,
+        output_field=DecimalField(max_digits=4, decimal_places=1)
+    )).
+        select_related('specialist').
+        prefetch_related('specialist__services', 'specialist__addresses').
+        annotate(min_price=Min('specialist__services__price')).
+        annotate(max_price=Max('specialist__services__price')).
+        order_by('distance'))
+
+    min_price_filter = query_params.get('min_price')
+    max_price_filter = query_params.get('max_price')
+    try:
+        if min_price_filter:
+            queryset = queryset.filter(max_price__gte=min_price_filter)
+        if max_price_filter:
+            return queryset.filter(min_price__lte=max_price_filter)
+    except ValueError:
+        raise ParseError('Prices should be integers')
+    return queryset

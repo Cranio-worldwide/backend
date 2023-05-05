@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import get_language_from_request
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,21 +11,21 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import Specialist
-from .filters import StaticContentFilter, SearchFilter
+from .filters import StaticContentFilter
 from .models import News, StaticContent, Address
+from .schema import rad, coords, max_p, min_p
 from .serializers import (
     AddressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
     SpecialistCreateSerializer, StaticContentSerializer, SearchSerializer
 )
 from .utils import (
     get_geodata, get_user_ip_address, parse_coordinates,
-    send_verification_email
+    send_verification_email, filter_qs
 )
 
 
 class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                        mixins.DestroyModelMixin, mixins.ListModelMixin,
-                        GenericViewSet):
+                        mixins.DestroyModelMixin, GenericViewSet):
     """ViewSet for model Specialists."""
     queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = SpecialistSerializer
@@ -133,14 +134,18 @@ class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SearchList(mixins.ListModelMixin, GenericViewSet):
-    """Viewset for search of specialists
-       Available options for filtering:
-       coordinates (obligatory) - 2 coordniates separated by comma
-       radius (optional) - search radiuse in km, default is set in settings
-       min_price & max_price - lower & upper limits of price
-    """
+    """Viewset for search of specialists."""
     serializer_class = SearchSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = SearchFilter
-    queryset = Address.objects.all()
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_class = SearchFilter
+    # queryset = Address.objects.all()
     pagination_class = LimitOffsetPagination
+
+    @swagger_auto_schema(manual_parameters=[rad, coords, max_p, min_p])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        params = self.request.query_params
+        queryset = Address.objects.all()
+        return filter_qs(queryset, params)
