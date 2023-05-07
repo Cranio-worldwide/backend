@@ -2,9 +2,7 @@ import datetime as dt
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import get_language_from_request
-from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from .models import Address, News, Service, StaticContent
 from users.models import Specialist
@@ -53,21 +51,10 @@ class NewsSerializer(serializers.ModelSerializer):
 
 class SpecialistCreateSerializer(serializers.ModelSerializer):
     """Serializer for users' authentification."""
-    email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=Specialist.objects.all())])
-    photo = Base64ImageField(
-        max_length=None,
-        required=False,
-        use_url=True)
 
     class Meta:
         model = Specialist
-        fields = (
-            'id', 'email', 'password',
-            'first_name', 'last_name', 'photo',
-            'about', 'phone', 'beginning_of_the_experience', 'diploma'
-        )
+        fields = ('id', 'email', 'password',)
         extra_kwargs = {
             'email': {'required': True},
             'password': {'required': True,
