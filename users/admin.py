@@ -36,9 +36,9 @@ class CustomUserAdmin(UserAdmin):
 
 class SpecialistAdmin(TranslationAdmin):
     list_display = ('id', 'email', 'first_name', 'last_name', 'phone',
-                    'diploma')
+                    'diploma_issuer', 'diploma_recipient')
     search_fields = ('id', 'email', 'first_name', 'last_name', 'phone',
-                     'diploma')
+                     'diploma_issuer', 'diploma_recipient')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

@@ -66,7 +66,8 @@ class Specialist(CustomUser):
         blank=True, null=True,
         validators=[MinValueValidator(1923),
                     MaxValueValidator(datetime.date.today().year)])
-    diploma = models.CharField(max_length=50, blank=True)
+    diploma_issuer = models.CharField(max_length=255, blank=True)
+    diploma_recipient = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -76,13 +77,6 @@ class Specialist(CustomUser):
             self.first_name_en, self.first_name_ru)
         self.last_name_en, self.last_name_ru = transliterate_field(
             self.last_name_en, self.last_name_ru)
-        # альтернатива, пока оставлю тут
-        # full_name_en = f'{self.first_name_en}&&{self.last_name_en}'
-        # full_name_ru = f'{self.first_name_ru}&&{self.last_name_ru}'
-        # full_name_en, full_name_ru = \
-        #     transliterate_field(full_name_en, full_name_ru)
-        # self.first_name_en, self.last_name_en = full_name_en.split('&&')
-        # self.first_name_ru, self.last_name_ru = full_name_ru.split('&&')
         self.about_en, self.about_ru = translate_field(
             self.about_en, self.about_ru)
         super(Specialist, self).save()
