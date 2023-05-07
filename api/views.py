@@ -2,15 +2,19 @@ import jwt
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import get_language_from_request
-from rest_framework import status, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import Specialist
-from .models import Address, Service, News, StaticContent
+from .filters import StaticContentFilter, SearchFilter
+from .models import News, StaticContent, Address
 from .serializers import (
-    AdressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
-    SpecialistCreateSerializer, StaticContentSerializer
+    AddressSerializer, SpecialistSerializer, ServiceSerializer, NewsSerializer,
+    SpecialistCreateSerializer, StaticContentSerializer, SearchSerializer
 )
 from .utils import (
     get_geodata, get_user_ip_address, parse_coordinates,
@@ -18,23 +22,38 @@ from .utils import (
 )
 
 
-class SpecialistViewSet(viewsets.ModelViewSet):
+class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin, mixins.ListModelMixin,
+                        GenericViewSet):
     """ViewSet for model Specialists."""
-
-    queryset = Specialist.objects.all()
+    queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = SpecialistSerializer
 
 
-class AdressViewSet(viewsets.ModelViewSet):
+class AbstractAttributeViewSet(viewsets.ModelViewSet):
+    """Abstract class for Spec attributes: Addresses & Services"""
+    def get_specialist(self):
+        return get_object_or_404(Specialist,
+                                 pk=self.kwargs.get('specialist_id'))
+
+    def perform_create(self, serializer):
+        serializer.save(specialist=self.get_specialist())
+
+
+class AddressViewSet(AbstractAttributeViewSet):
     """ViewSet for model Address."""
-    queryset = Address.objects.all()
-    serializer_class = AdressSerializer
+    serializer_class = AddressSerializer
+
+    def get_queryset(self):
+        return self.get_specialist().addresses.all()
 
 
-class ServiceViewSet(viewsets.ModelViewSet):
+class ServiceViewSet(AbstractAttributeViewSet):
     """ViewSet for model Service."""
-    queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+
+    def get_queryset(self):
+        return self.get_specialist().services.all()
 
 
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -103,7 +122,25 @@ class VerifyEmail(APIView):
 
 
 class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):
-    """Viewset for transfer of multilingual static content to frontend"""
+    """Viewset for transfer of multilingual static content to frontend
+       Filtering via 'name' parameter: use comma(',') for multiple filter
+    """
     serializer_class = StaticContentSerializer
     queryset = StaticContent.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = StaticContentFilter
     lookup_field = 'name'
+
+
+class SearchList(mixins.ListModelMixin, GenericViewSet):
+    """Viewset for search of specialists
+       Available options for filtering:
+       coordinates (obligatory) - 2 coordniates separated by comma
+       radius (optional) - search radiuse in km, default is set in settings
+       min_price & max_price - lower & upper limits of price
+    """
+    serializer_class = SearchSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = SearchFilter
+    queryset = Address.objects.all()
+    pagination_class = LimitOffsetPagination
