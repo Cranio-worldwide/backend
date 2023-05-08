@@ -68,12 +68,9 @@ class SpecialistCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Specialist
-        fields = (
-            'id', 'email', 'password',
-            'first_name', 'last_name', 'photo',
-            'about', 'phone', 'beginning_of_the_experience',
-            'address', 'service'
-        )
+
+        fields = ('id', 'email', 'password',)
+
         extra_kwargs = {
             'email': {'required': True},
             'password': {'required': True,
@@ -89,11 +86,7 @@ class SpecialistCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        address = validated_data.pop('address')
-        service = validated_data.pop('service')
         user = Specialist.objects.create(**validated_data)
-        user.address.set(address)
-        user.service.set(service)
         user.set_password(password)
         user.save()
         return user

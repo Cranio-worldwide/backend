@@ -133,3 +133,6 @@ dmypy.json
 avatars
 geodjango_setup.bat
 .vscode/
+
+# папки со статикой и медиа
+media/
