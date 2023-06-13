@@ -34,11 +34,11 @@ msgstr ""
 msgid "Specialist's appointment"
 msgstr ""
 
-#: .\cranio\settings.py:106
+#: .\config\settings.py:106
 msgid "English"
 msgstr ""
 
-#: .\cranio\settings.py:107
+#: .\config\settings.py:107
 msgid "Russian"
 msgstr ""
 
