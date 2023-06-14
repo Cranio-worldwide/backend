@@ -1,15 +1,18 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, viewsets, mixins
-from rest_framework.viewsets import GenericViewSet
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
-from .models import Address, Specialist
-from .schema import rad, coords, max_p, min_p
+from .models import Address, Specialist, SpecialistData
+from .permissions import IsSpecialistOrReadOnly
+from .schema import coords, max_p, min_p, rad
 from .serializers import (
-    AddressSerializer, FullSpecialistSerializer,
-    ServiceSerializer, SearchSerializer
+    AddressSerializer, FullProfileSerializer, FullSpecialistSerializer,
+    SearchSerializer, ServiceSerializer
 )
 from .utils import filter_qs
 
@@ -19,11 +22,38 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
     """ViewSet for model Specialists."""
     queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = FullSpecialistSerializer
-    
+    permission_classes = [IsSpecialistOrReadOnly]
+
+    @action(methods=['GET', 'PATCH'], detail=True, url_path='profile')
+    def specialists_profile(self, request, pk):
+        specialist = get_object_or_404(Specialist, pk=pk)
+        
+        if request.method == 'GET':
+            serializer = FullProfileSerializer(specialist.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        serializer = FullProfileSerializer(specialist.data, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+
+# class ProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+#                      GenericViewSet):
+#     serializer_class = FullSpecialistSerializer
+#     permission_classes = [IsSpecialistOrReadOnly]
+#     serializer_class = FullProfileSerializer
+
+#     def get_queryset(self):
+#         spec = get_object_or_404(Specialist,
+#                                  pk=self.kwargs.get('specialist_id'))
+#         return spec.data
 
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
     """Abstract class for Spec attributes: Addresses & Services"""
+    permission_classes = [IsSpecialistOrReadOnly]
+
     def get_specialist(self):
         return get_object_or_404(Specialist,
                                  pk=self.kwargs.get('specialist_id'))

@@ -36,6 +36,8 @@ class Base64ImageField(serializers.ImageField):
 
 
 class ShortProfileSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
     photo = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
@@ -44,18 +46,30 @@ class ShortProfileSerializer(serializers.ModelSerializer):
 
 
 class FullProfileSerializer(ShortProfileSerializer):
-    total_experience = serializers.SerializerMethodField()
+    about = serializers.CharField(required=False)
+    diploma_issuer = serializers.CharField(required=False)
+    diploma_recipient = serializers.CharField(required=False)
+    phone = serializers.CharField(required=False)
+    practice_start = serializers.IntegerField(required=False)
+    # total_experience = serializers.SerializerMethodField()
 
     class Meta(ShortProfileSerializer.Meta):
         fields = ShortProfileSerializer.Meta.fields + (
             'about', 'diploma_issuer', 'diploma_recipient',
-            'phone', 'practice_start', 'total_experience'
+            'phone', 'practice_start',
+            # 'total_experience',
         )
 
-    def get_total_experience(self, obj):
-        if not obj.practice_start:
-            return None
-        return dt.datetime.now().year - obj.practice_start
+    # def update(self, instance, validated_data):
+    #     instance.first_name = validated_data.get('first_name', instance.first_name)
+    #     instance.last_name = validated_data.get('last_name', instance.last_name)
+    #     instance.photo = validated_data.get('photo', instance.photo)
+    #     instance.save()
+
+    # def get_total_experience(self, obj):
+    #     if hasattr(obj, 'practice_start'):
+    #         return dt.datetime.now().year - obj.practice_start
+    #     return 0
 
 
 class ShortSpecialistSerializer(serializers.ModelSerializer):
@@ -76,7 +90,21 @@ class FullSpecialistSerializer(ShortSpecialistSerializer):
     profile = FullProfileSerializer(read_only=True, source='data')
 
 
+class SearchSerializer(serializers.ModelSerializer):
+    """Serializer for search of specialists nearby."""
+    specialist = ShortSpecialistSerializer(read_only=True)
+    distance = serializers.DecimalField(max_digits=4, decimal_places=1,
+                                        read_only=True)
+    min_price = serializers.IntegerField(read_only=True)
+    max_price = serializers.IntegerField(read_only=True)
 
+    class Meta:
+        fields = ('loc_latitude', 'loc_longitude', 'min_price', 'max_price',
+                  'distance', 'specialist')
+        model = Address
+        
+        
+        
 # class SpecialistCreateSerializer(serializers.ModelSerializer):
 #     """Serializer for users' authentification."""
 
@@ -104,17 +132,3 @@ class FullSpecialistSerializer(ShortSpecialistSerializer):
 #         user.set_password(password)
 #         user.save()
 #         return user
-
-
-class SearchSerializer(serializers.ModelSerializer):
-    """Serializer for search of specialists nearby."""
-    specialist = ShortSpecialistSerializer(read_only=True)
-    distance = serializers.DecimalField(max_digits=4, decimal_places=1,
-                                        read_only=True)
-    min_price = serializers.IntegerField(read_only=True)
-    max_price = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        fields = ('loc_latitude', 'loc_longitude', 'min_price', 'max_price',
-                  'distance', 'specialist')
-        model = Address

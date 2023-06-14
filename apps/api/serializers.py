@@ -27,4 +27,3 @@ class StaticContentSerializer(serializers.ModelSerializer):
         if hasattr(obj, field_name):
             return getattr(obj, field_name)
         return obj.fields_en
-

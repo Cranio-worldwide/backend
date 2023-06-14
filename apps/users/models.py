@@ -47,8 +47,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         CUSTOMER = 'CUSTOMER', 'Customer'
         ADMIN = 'ADMIN', 'Admin'
 
-    base_role = Role.SPECIALIST
-
     email = models.EmailField('email address', unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

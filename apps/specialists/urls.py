@@ -7,7 +7,8 @@ from .views import (AddressViewSet, SpecialistViewSet, ServiceViewSet, SearchLis
 
 
 router = DefaultRouter()
-router.register('specialists', SpecialistViewSet, basename='specialists')
+router.register('specialists',
+                SpecialistViewSet, basename='specialists')
 router.register(r'specialists/(?P<specialist_id>\d+)/addresses',
                 AddressViewSet, basename='addresses')
 router.register(r'specialists/(?P<specialist_id>\d+)/services',
