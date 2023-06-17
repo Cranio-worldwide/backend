@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from api.models import StaticContent
+from ...models import StaticContent
 
 
 class Command(BaseCommand):

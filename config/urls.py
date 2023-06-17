@@ -18,7 +18,7 @@ class BothHttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
 urlpatterns = [
     path('api/v1/', include('apps.users.urls')),
     path('api/v1/', include('apps.specialists.urls')),
-    path('api/v1/', include('apps.api.urls')),
+    path('api/v1/', include('apps.content.urls')),
     path('admin/', admin.site.urls),
 ]
 

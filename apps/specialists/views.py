@@ -7,14 +7,14 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from .models import Address, Specialist, SpecialistData
+from .filters import filter_qs
+from .models import Address, Currency, Specialist
 from .permissions import IsSpecialistOrReadOnly
-from .schema import coords, max_p, min_p, rad
+from .schema import coords, max_price, min_price, radius
 from .serializers import (
-    AddressSerializer, FullProfileSerializer, FullSpecialistSerializer,
-    SearchSerializer, ServiceSerializer
+    AddressSerializer, CurrencySerializer, FullProfileSerializer,
+    FullSpecialistSerializer, SearchSerializer, ServiceSerializer,
 )
-from .utils import filter_qs
 
 
 class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
@@ -27,27 +27,16 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
     @action(methods=['GET', 'PATCH'], detail=True, url_path='profile')
     def specialists_profile(self, request, pk):
         specialist = get_object_or_404(Specialist, pk=pk)
-        
+
         if request.method == 'GET':
-            serializer = FullProfileSerializer(specialist.data)
+            serializer = FullProfileSerializer(specialist.profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        serializer = FullProfileSerializer(specialist.data, data=request.data, partial=True)
+        serializer = FullProfileSerializer(
+            specialist.profile, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
-
-# class ProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-#                      GenericViewSet):
-#     serializer_class = FullSpecialistSerializer
-#     permission_classes = [IsSpecialistOrReadOnly]
-#     serializer_class = FullProfileSerializer
-
-#     def get_queryset(self):
-#         spec = get_object_or_404(Specialist,
-#                                  pk=self.kwargs.get('specialist_id'))
-#         return spec.data
 
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
@@ -78,6 +67,12 @@ class ServiceViewSet(AbstractAttributeViewSet):
         return self.get_specialist().services.all()
 
 
+class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
+    """Viewset for model Currency."""
+    serializer_class = CurrencySerializer
+    queryset = Currency.objects.all()
+
+
 class SearchList(mixins.ListModelMixin, GenericViewSet):
     """Viewset for search of specialists."""
     serializer_class = SearchSerializer
@@ -86,7 +81,8 @@ class SearchList(mixins.ListModelMixin, GenericViewSet):
     # queryset = Address.objects.all()
     pagination_class = LimitOffsetPagination
 
-    @swagger_auto_schema(manual_parameters=[rad, coords, max_p, min_p])
+    @swagger_auto_schema(manual_parameters=[radius, coords,
+                                            max_price, min_price])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

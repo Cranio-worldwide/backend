@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from apps.api.models import StaticContent
+from .models import StaticContent
 
 
 class StaticContentFilter(filters.FilterSet):

@@ -1,10 +1,12 @@
-from modeltranslation.translator import register, TranslationOptions
+from modeltranslation.translator import TranslationOptions, register
 
-from apps.specialists.models import SpecialistData, Address, Service
+from .models import (
+    Address, Currency, Service, SpecialistProfile,
+)
 
 
-@register(SpecialistData)
-class SpecialistDataTranslationOptions(TranslationOptions):
+@register(SpecialistProfile)
+class SpecialistProfileTranslationOptions(TranslationOptions):
     fields = ('first_name', 'last_name', 'about')
 
 
@@ -16,3 +18,8 @@ class AddressTranslationOptions(TranslationOptions):
 @register(Service)
 class ServiceTranslationOptions(TranslationOptions):
     fields = ('name_service', 'description')
+
+
+@register(Currency)
+class CurrencyTranslationOptions(TranslationOptions):
+    fields = ('name',)

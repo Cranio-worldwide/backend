@@ -1,12 +1,11 @@
 import base64
-import datetime as dt
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
-from django.utils.translation import get_language_from_request
-from rest_framework import serializers
 
-from .models import Address, Service, Specialist, SpecialistData
+from django.core.files.base import ContentFile
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
+from .models import Address, Currency, Service, Specialist, SpecialistProfile
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -15,14 +14,41 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'loc_latitude', 'loc_longitude', 'description')
         model = Address
+        validators = [UniqueTogetherValidator(
+            queryset=Address.objects.all(),
+            fields=('loc_latitude', 'loc_longitude', 'description'),
+            message=_('You have already added this address')
+        )]
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    """Serializer for model Currency."""
+    class Meta:
+        fields = ('slug', 'name')
+        model = Currency
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for model Service."""
+    currency = serializers.PrimaryKeyRelatedField(queryset=Currency.objects.all())
+    description = serializers.CharField(required=False)
 
     class Meta:
         fields = ('id', 'name_service', 'price', 'currency', 'description')
         model = Service
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['currency'] = CurrencySerializer(instance.currency).data
+        return rep
+
+    def validate(self, attrs):
+        spec_id = self.context['view'].kwargs.get('specialist_id')
+        service = self.initial_data.get('name_service')
+        if (self.context['request'].method == 'POST' and Service.objects.
+                filter(specialist_id=spec_id, name_service=service).exists()):
+            raise serializers.ValidationError(_('Existing service.'))
+        return super().validate(attrs)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -36,16 +62,18 @@ class Base64ImageField(serializers.ImageField):
 
 
 class ShortProfileSerializer(serializers.ModelSerializer):
+    """Serializer for Specialist Profile - for search page."""
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
     photo = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         fields = ('first_name', 'last_name', 'photo')
-        model = SpecialistData
+        model = SpecialistProfile
 
 
 class FullProfileSerializer(ShortProfileSerializer):
+    """Serializer for Specialist Profile - for details page."""
     about = serializers.CharField(required=False)
     diploma_issuer = serializers.CharField(required=False)
     diploma_recipient = serializers.CharField(required=False)
@@ -60,12 +88,6 @@ class FullProfileSerializer(ShortProfileSerializer):
             # 'total_experience',
         )
 
-    # def update(self, instance, validated_data):
-    #     instance.first_name = validated_data.get('first_name', instance.first_name)
-    #     instance.last_name = validated_data.get('last_name', instance.last_name)
-    #     instance.photo = validated_data.get('photo', instance.photo)
-    #     instance.save()
-
     # def get_total_experience(self, obj):
     #     if hasattr(obj, 'practice_start'):
     #         return dt.datetime.now().year - obj.practice_start
@@ -73,8 +95,8 @@ class FullProfileSerializer(ShortProfileSerializer):
 
 
 class ShortSpecialistSerializer(serializers.ModelSerializer):
-    """Serializer for model Specialists."""
-    profile = ShortProfileSerializer(read_only=True, source='data')
+    """Serializer for model Specialists - for search page."""
+    profile = ShortProfileSerializer(read_only=True)
     addresses = AddressSerializer(many=True, read_only=True)
     services = ServiceSerializer(many=True, read_only=True)
 
@@ -86,8 +108,8 @@ class ShortSpecialistSerializer(serializers.ModelSerializer):
 
 
 class FullSpecialistSerializer(ShortSpecialistSerializer):
-    """Serializer for model Specialists."""
-    profile = FullProfileSerializer(read_only=True, source='data')
+    """Serializer for model Specialists - for details page."""
+    profile = FullProfileSerializer(read_only=True)
 
 
 class SearchSerializer(serializers.ModelSerializer):
@@ -102,33 +124,3 @@ class SearchSerializer(serializers.ModelSerializer):
         fields = ('loc_latitude', 'loc_longitude', 'min_price', 'max_price',
                   'distance', 'specialist')
         model = Address
-        
-        
-        
-# class SpecialistCreateSerializer(serializers.ModelSerializer):
-#     """Serializer for users' authentification."""
-
-#     class Meta:
-#         model = Specialist
-
-#         fields = ('id', 'email', 'password',)
-
-#         extra_kwargs = {
-#             'email': {'required': True},
-#             'password': {'required': True,
-#                          'write_only': True},
-#         }
-
-#     def validate_password(self, data):
-#         try:
-#             validate_password(data)
-#         except ValidationError as exc:
-#             raise serializers.ValidationError(str(exc))
-#         return data
-
-#     def create(self, validated_data):
-#         password = validated_data.pop('password')
-#         user = Specialist.objects.create(**validated_data)
-#         user.set_password(password)
-#         user.save()
-#         return user

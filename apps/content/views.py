@@ -5,12 +5,8 @@ from rest_framework.response import Response
 
 from .filters import StaticContentFilter
 from .models import News, StaticContent
-from .serializers import (
-    NewsSerializer, StaticContentSerializer
-)
-from .utils import (
-    get_geodata, get_user_ip_address, parse_coordinates,
-)
+from .serializers import NewsSerializer, StaticContentSerializer
+from .utils import get_geodata, get_user_ip_address, parse_coordinates
 
 
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):

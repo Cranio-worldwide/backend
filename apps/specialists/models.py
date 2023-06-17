@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -25,17 +26,17 @@ class Specialist(CustomUser):
         return self.email
 
     @property
-    def data(self):
-        return self.specialistdata
+    def profile(self):
+        return self.specialistprofile
 
 
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created and instance.role == 'SPECIALIST':
-        SpecialistData.objects.create(user=instance)
+        SpecialistProfile.objects.create(user=instance)
 
 
-class SpecialistData(models.Model):
+class SpecialistProfile(models.Model):
     class Status(models.TextChoices):
         FILLING = 'FILLING', _('application should be filled in')
         DIPLOMA_CONFIRMATION = 'CHECKING', _('pending diploma confirmation')
@@ -99,7 +100,7 @@ class SpecialistData(models.Model):
             self.last_name_en, self.last_name_ru)
         self.about_en, self.about_ru = translate_field(
             self.about_en, self.about_ru)
-        super(SpecialistData, self).save()
+        super(SpecialistProfile, self).save()
 
     def __str__(self):
         return f'{self.user}: {self.first_name} {self.last_name}'
@@ -127,15 +128,19 @@ class Address(models.Model):
         super(Address, self).save()
 
 
+class Currency(models.Model):
+    """The Currency model"""
+    slug = models.SlugField(verbose_name='Currency slug')
+    name = models.CharField(verbose_name='Currency name', max_length=20)
+
+    def __str__(self):
+        return self.slug
+
+
 class Service(models.Model):
     """
     The model for describing the services and prices of a specialist
     """
-    class Currency(models.TextChoices):
-        USD = 'USD', _('USD')
-        EUR = 'EUR', _('EUR')
-        RUB = 'RUB', _('RUB')
-
     specialist = models.ForeignKey(
         Specialist,
         related_name='services',
@@ -144,11 +149,7 @@ class Service(models.Model):
     name_service = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     price = models.PositiveIntegerField()
-    currency = models.CharField(
-        max_length=5,
-        choices=Currency.choices,
-        default=Currency.USD
-    )
+    currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.name_service} - {self.price} {self.currency}'

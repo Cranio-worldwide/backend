@@ -4,7 +4,8 @@ from pathlib import Path
 from django.core.management.base import BaseCommand
 
 from users.models import Specialist
-from api.models import Address, Service, News
+from apps.content.models import News
+from apps.specialists.models import Specialist, SpecialistProfile, Address, Service
 
 
 class Command(BaseCommand):
