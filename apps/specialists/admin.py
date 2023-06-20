@@ -6,7 +6,7 @@ from .models import Address, Currency, Service, SpecialistProfile
 
 @admin.register(SpecialistProfile)
 class SpecialistProfileAdmin(TranslationAdmin):
-    list_display = ('id', 'user', 'first_name', 'last_name', 'phone',
+    list_display = ('id', 'specialist', 'first_name', 'last_name', 'phone',
                     'diploma_issuer', 'diploma_recipient')
     search_fields = ('first_name', 'last_name', 'phone',
                      'diploma_issuer', 'diploma_recipient')

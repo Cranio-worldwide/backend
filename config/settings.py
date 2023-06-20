@@ -112,17 +112,16 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.CustomUser'
 
 DJOSER = {
-    'SERIALIZERS': {},
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    # 'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'api/v1/auth/verify-email/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-
-    }
+    },
+    'TOKEN_MODEL': None,
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24 * 5),  # на время разработки
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('JWT',),
 }

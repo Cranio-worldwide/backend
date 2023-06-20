@@ -17,6 +17,10 @@ class News(models.Model):
     date = models.DateField(auto_now_add=True)
     published = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = 'New'
+        verbose_name_plural = 'News'
+
     def __str__(self):
         return self.description[:15]
 
@@ -33,6 +37,10 @@ class StaticContent(models.Model):
     name = models.SlugField(max_length=50)
     fields_ru = models.JSONField()
     fields_en = models.JSONField()
+
+    class Meta:
+        verbose_name = 'Static content file'
+        verbose_name_plural = 'Static content files'
 
     def __str__(self):
         return self.name

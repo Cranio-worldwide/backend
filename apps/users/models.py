@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
@@ -39,14 +41,14 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
-    Base class for user registration,
-    email is used instead of username.
+    Base class for user registration, email is used instead of username.
     """
     class Role(models.TextChoices):
         SPECIALIST = 'SPECIALIST', 'Specialist'
         CUSTOMER = 'CUSTOMER', 'Customer'
         ADMIN = 'ADMIN', 'Admin'
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField('email address', unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

@@ -9,9 +9,9 @@ from .views import (
 router = DefaultRouter()
 router.register('specialists',
                 SpecialistViewSet, basename='specialists')
-router.register(r'specialists/(?P<specialist_id>\d+)/addresses',
+router.register(r'specialists/(?P<specialist_id>[0-9a-f-]+)/addresses',
                 AddressViewSet, basename='addresses')
-router.register(r'specialists/(?P<specialist_id>\d+)/services',
+router.register(r'specialists/(?P<specialist_id>[0-9a-f-]+)/services',
                 ServiceViewSet, basename='services')
 router.register('search', SearchList, basename='search')
 router.register('currencies', CurrencyViewSet, basename='currencies')

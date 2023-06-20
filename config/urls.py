@@ -29,7 +29,6 @@ schema_view = get_schema_view(
         title="Snippets API",
         default_version='v1',
         description="Cranio-WW API documentation",
-        # terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="TBD / contact@snippets.local"),
         license=openapi.License(name="TBD / BSD License"),
     ),

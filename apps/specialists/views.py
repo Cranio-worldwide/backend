@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -7,7 +6,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from .filters import filter_qs
+from .utils import filter_qs
 from .models import Address, Currency, Specialist
 from .permissions import IsSpecialistOrReadOnly
 from .schema import coords, max_price, min_price, radius
@@ -17,12 +16,11 @@ from .serializers import (
 )
 
 
-class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                        mixins.DestroyModelMixin, GenericViewSet):
+class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     """ViewSet for model Specialists."""
     queryset = Specialist.objects.prefetch_related('addresses', 'services')
     serializer_class = FullSpecialistSerializer
-    permission_classes = [IsSpecialistOrReadOnly]
+    permission_classes = (IsSpecialistOrReadOnly,)
 
     @action(methods=['GET', 'PATCH'], detail=True, url_path='profile')
     def specialists_profile(self, request, pk):
@@ -32,8 +30,12 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
             serializer = FullProfileSerializer(specialist.profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
+        if specialist != request.user:
+            return Response()
         serializer = FullProfileSerializer(
-            specialist.profile, data=request.data, partial=True)
+            specialist.profile, data=request.data, partial=True,
+            context={'request': request, 'spec_id': pk}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -41,7 +43,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
     """Abstract class for Spec attributes: Addresses & Services"""
-    permission_classes = [IsSpecialistOrReadOnly]
+    permission_classes = (IsSpecialistOrReadOnly,)
 
     def get_specialist(self):
         return get_object_or_404(Specialist,
@@ -76,9 +78,6 @@ class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
 class SearchList(mixins.ListModelMixin, GenericViewSet):
     """Viewset for search of specialists."""
     serializer_class = SearchSerializer
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_class = SearchFilter
-    # queryset = Address.objects.all()
     pagination_class = LimitOffsetPagination
 
     @swagger_auto_schema(manual_parameters=[radius, coords,
@@ -89,4 +88,12 @@ class SearchList(mixins.ListModelMixin, GenericViewSet):
     def get_queryset(self):
         params = self.request.query_params
         queryset = Address.objects.all()
-        return filter_qs(queryset, params)
+        # return filter_qs(queryset, params)
+        # НЕ ПОЛУЧИЛОСЬ НИЧЕГО ЛУЧШЕ - СМ. UTILS.PY
+        queryset = list(filter_qs(queryset, params))
+        seen_specialists, output = set(), []
+        for address in queryset:
+            if address.specialist not in seen_specialists:
+                output.append(address)
+                seen_specialists.add(address.specialist)
+        return output

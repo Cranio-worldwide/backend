@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
+from apps import specialists
+
 from .models import Address, Currency, Service, Specialist, SpecialistProfile
 
 
@@ -24,13 +26,14 @@ class AddressSerializer(serializers.ModelSerializer):
 class CurrencySerializer(serializers.ModelSerializer):
     """Serializer for model Currency."""
     class Meta:
-        fields = ('slug', 'name')
+        fields = ('id', 'slug', 'name')
         model = Currency
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for model Service."""
-    currency = serializers.PrimaryKeyRelatedField(queryset=Currency.objects.all())
+    currency = serializers.PrimaryKeyRelatedField(
+        queryset=Currency.objects.all())
     description = serializers.CharField(required=False)
 
     class Meta:
@@ -47,7 +50,9 @@ class ServiceSerializer(serializers.ModelSerializer):
         service = self.initial_data.get('name_service')
         if (self.context['request'].method == 'POST' and Service.objects.
                 filter(specialist_id=spec_id, name_service=service).exists()):
-            raise serializers.ValidationError(_('Existing service.'))
+            raise serializers.ValidationError(
+                _('You have already added this service.')
+            )
         return super().validate(attrs)
 
 
@@ -79,37 +84,40 @@ class FullProfileSerializer(ShortProfileSerializer):
     diploma_recipient = serializers.CharField(required=False)
     phone = serializers.CharField(required=False)
     practice_start = serializers.IntegerField(required=False)
-    # total_experience = serializers.SerializerMethodField()
 
     class Meta(ShortProfileSerializer.Meta):
         fields = ShortProfileSerializer.Meta.fields + (
             'about', 'diploma_issuer', 'diploma_recipient',
             'phone', 'practice_start',
-            # 'total_experience',
         )
 
-    # def get_total_experience(self, obj):
-    #     if hasattr(obj, 'practice_start'):
-    #         return dt.datetime.now().year - obj.practice_start
-    #     return 0
+    def validate_phone(self, value):
+        spec_id = self.context['spec_id']
+        if (self.context['request'].method == 'PATCH' and Specialist.objects.
+                filter(profile__phone=value).
+                exclude(id=spec_id).
+                exists()):
+            raise serializers.ValidationError(_('Existing phone number.'))
+
+
+class FullSpecialistSerializer(serializers.ModelSerializer):
+    """Serializer for model Specialists - for details page."""
+    profile = FullProfileSerializer(read_only=True)
+    addresses = AddressSerializer(many=True, read_only=True)
+    services = ServiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        fields = ('id', 'email', 'profile', 'addresses', 'services')
+        model = Specialist
 
 
 class ShortSpecialistSerializer(serializers.ModelSerializer):
     """Serializer for model Specialists - for search page."""
     profile = ShortProfileSerializer(read_only=True)
-    addresses = AddressSerializer(many=True, read_only=True)
-    services = ServiceSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = (
-            'id', 'email', 'profile', 'addresses', 'services',
-        )
+        fields = ('id', 'email', 'profile')
         model = Specialist
-
-
-class FullSpecialistSerializer(ShortSpecialistSerializer):
-    """Serializer for model Specialists - for details page."""
-    profile = FullProfileSerializer(read_only=True)
 
 
 class SearchSerializer(serializers.ModelSerializer):
@@ -119,8 +127,28 @@ class SearchSerializer(serializers.ModelSerializer):
                                         read_only=True)
     min_price = serializers.IntegerField(read_only=True)
     max_price = serializers.IntegerField(read_only=True)
+    currency = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ('loc_latitude', 'loc_longitude', 'min_price', 'max_price',
-                  'distance', 'specialist')
+        fields = ('loc_latitude', 'loc_longitude', 'description', 'distance',
+                  'min_price', 'max_price',
+                  'currency',
+                  'specialist')
         model = Address
+
+    def get_currency(self, address):
+        currency = address.specialist.services.first().currency
+        return CurrencySerializer(currency).data
+
+
+class MeSpecialistSerializer(FullSpecialistSerializer):
+    """Specialist serializer for Personal Area - /me endpoint."""
+    status = serializers.SerializerMethodField()
+    approver_comments = serializers.CharField(source='profile.approver_comments')
+
+    class Meta(FullSpecialistSerializer.Meta):
+        fields = FullSpecialistSerializer.Meta.fields + (
+            'status', 'approver_comments', '')
+        
+    def get_status(self, obj):
+        return obj.profile.get_status_display()
