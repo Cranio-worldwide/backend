@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from apps import specialists
 
 from .models import Address, Currency, Service, Specialist, SpecialistProfile
 
@@ -144,11 +143,12 @@ class SearchSerializer(serializers.ModelSerializer):
 class MeSpecialistSerializer(FullSpecialistSerializer):
     """Specialist serializer for Personal Area - /me endpoint."""
     status = serializers.SerializerMethodField()
-    approver_comments = serializers.CharField(source='profile.approver_comments')
+    approver_comments = serializers.CharField(
+        source='profile.approver_comments')
 
     class Meta(FullSpecialistSerializer.Meta):
         fields = FullSpecialistSerializer.Meta.fields + (
-            'status', 'approver_comments', '')
-        
+            'status', 'approver_comments')
+
     def get_status(self, obj):
         return obj.profile.get_status_display()

@@ -9,7 +9,7 @@ from .serializers import NewsSerializer, StaticContentSerializer
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     """Viewset for model News. Adds/changes - through admin panel."""
     serializer_class = NewsSerializer
-    queryset = News.objects.all()
+    queryset = News.objects.filter(published=True)
 
 
 class StaticContentViewSet(viewsets.ReadOnlyModelViewSet):

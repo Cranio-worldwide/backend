@@ -19,9 +19,10 @@ from .serializers import UserSerializer
 
 
 class UserViewSet(DjoserViewSet):
-
+    """Customized version of Djoser UserViewSet."""
     @action(["get", "delete"], detail=False)
     def me(self, request, *args, **kwargs):
+        """Endpoint with user's detailed data for Personal Area page."""
         self.get_object = self.get_instance
         if request.method == "GET":
             if request.user.role == CustomUser.Role.SPECIALIST:
@@ -34,36 +35,12 @@ class UserViewSet(DjoserViewSet):
 
     @action(["get"], detail=False)
     def me_where(self, request):
+        """Returns coordinates of user basing on IP address."""
         ip_address = get_user_ip_address(request)
         geodata = get_geodata(ip_address)
         coordinates = parse_coordinates(geodata)
         data = {"coordinates": coordinates}
         return Response(data)
-
-    # def perform_create(self, serializer, *args, **kwargs):
-    #     super().perform_create(serializer, *args, **kwargs)
-    #     user = serializer.instance
-    #     user.is_active = True
-    #     user.save()
-
-
-    # @action(["post"], detail=False)
-    # def activation(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     user = serializer.user
-    #     user.is_verified = True
-    #     user.save()
-
-    #     signals.user_activated.send(
-    #         sender=self.__class__, user=user, request=self.request
-    #     )
-
-    #     context = {"user": user}
-    #     to = [user.email]
-    #     settings.EMAIL.confirmation(self.request, context).send(to)
-
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class VerifyEmail(APIView):

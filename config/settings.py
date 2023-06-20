@@ -3,13 +3,14 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', default='1')
+SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 DEBUG = True
 
@@ -100,7 +101,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
@@ -112,7 +112,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.CustomUser'
 
 DJOSER = {
-    'ACTIVATION_URL': 'api/v1/auth/verify-email/{uid}/{token}',
+    'ACTIVATION_URL': 'auth/verify-email/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
@@ -121,7 +121,7 @@ DJOSER = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24 * 5),  # на время разработки
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24),  # на время разработки, потом 1 час
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('JWT',),
 }
@@ -171,24 +171,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
-EMAIL_DATA = {
-    'en': {
-        'EMAIL_SUBJECT': 'Verify email at Cranio Worldwide',
-        'EMAIL_MESSEGE': 'Please use the link below to verify your email for Cranio Worldwide',
-        'EMAIL_SUCCESS_MESSEGE': 'Account successfully verified',
-        'TOKEN_EXPIRED': 'Activation link expired',
-        'TOKEN_INVALID': 'Invalid token',
-    },
-    'ru': {
-        'EMAIL_SUBJECT': 'Подтверждение электронной почты для Cranio Worldwide',
-        'EMAIL_MESSEGE': 'Пожалуйста, воспользуйтесь ссылкой ниже для подтверждения Вашей электорнной почты на сайте Cranio Worldwide',
-        'EMAIL_SUCCESS_MESSEGE': 'Ваша электронная почта успешно подтверждена',
-        'TOKEN_EXPIRED': 'Срок действия ссылки истек',
-        'TOKEN_INVALID': 'Ссылка не действительна',
-    },
-}

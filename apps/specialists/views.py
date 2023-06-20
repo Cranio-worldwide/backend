@@ -89,7 +89,7 @@ class SearchList(mixins.ListModelMixin, GenericViewSet):
         params = self.request.query_params
         queryset = Address.objects.all()
         # return filter_qs(queryset, params)
-        # НЕ ПОЛУЧИЛОСЬ НИЧЕГО ЛУЧШЕ - СМ. UTILS.PY
+        # НЕ ПОЛУЧИЛОСЬ НИЧЕГО ЛУЧШЕ УДАЛЕНИЯ ДУБЛЕЙ ПО СПЕЦУ - СМ. UTILS.PY
         queryset = list(filter_qs(queryset, params))
         seen_specialists, output = set(), []
         for address in queryset:

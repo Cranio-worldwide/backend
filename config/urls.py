@@ -7,6 +7,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg.generators import OpenAPISchemaGenerator
 from rest_framework import permissions
 
+from apps.users.views import VerifyEmail
+
 
 class BothHttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
     def get_schema(self, request=None, public=False):
@@ -20,6 +22,7 @@ urlpatterns = [
     path('api/v1/', include('apps.specialists.urls')),
     path('api/v1/', include('apps.content.urls')),
     path('admin/', admin.site.urls),
+    path('auth/verify-email/<uid>/<token>/', VerifyEmail.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

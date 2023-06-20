@@ -48,7 +48,8 @@ def filter_qs(queryset, query_params):
         filter(loc_latitude__gt=(point_lat - radius_in_degree),
                loc_latitude__lt=(point_lat + radius_in_degree),
                loc_longitude__gt=(point_lon - radius_in_degree),
-               loc_longitude__lt=(point_lon + radius_in_degree),).
+               loc_longitude__lt=(point_lon + radius_in_degree),
+               specialist__profile__status='ACTIVE').
         annotate(
             distance=Sqrt(
                 (
@@ -65,8 +66,9 @@ def filter_qs(queryset, query_params):
         # filter(distance=Min('specialist__addresses__distance')).
         select_related('specialist').
         prefetch_related('specialist__services', 'specialist__addresses').
-        # НЕ РАБОТАЕТ DISTINCT ПРИ АННОТАЦИИ И СОРТИРОВКЕ ПО ДИСТАНЦИИ
         order_by('distance')
+        # НЕ РАБОТАЕТ DISTINCT ПРИ АННОТАЦИИ И СОРТИРОВКЕ ПО ДИСТАНЦИИ
+        # distinct('specialist')
     )
 
     queryset = (queryset.

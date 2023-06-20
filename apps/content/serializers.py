@@ -6,7 +6,6 @@ from .models import News, StaticContent
 
 class NewsSerializer(serializers.ModelSerializer):
     """Serializer for model News."""
-
     class Meta:
         fields = ('id', 'date', 'picture', 'description', 'published')
         model = News

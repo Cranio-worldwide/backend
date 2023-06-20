@@ -98,6 +98,7 @@ class SpecialistProfile(models.Model):
         verbose_name_plural = 'Specialists Profiles'
 
     def save(self, **kwargs):
+        """Translate about, transliterate first & last name."""
         self.first_name_en, self.first_name_ru = transliterate_field(
             self.first_name_en, self.first_name_ru)
         self.last_name_en, self.last_name_ru = transliterate_field(
@@ -110,6 +111,10 @@ class SpecialistProfile(models.Model):
         return f'{self.specialist}: {self.first_name} {self.last_name}'
 
     def clean(self):
+        """
+        Demands filling comments if corrections by specialist are required.
+        Cleans comments if approval is passed.
+        """
         if (self.status == self.Status.CORRECTING and not
                 self.approver_comments):
             raise ValidationError(_('Please comment the status.'))
