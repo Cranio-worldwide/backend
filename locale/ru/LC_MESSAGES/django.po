@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 10:43+0300\n"
+"POT-Creation-Date: 2023-06-21 10:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,39 +20,65 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: .\api\models.py:34
-msgid "USD"
-msgstr "USD"
+#: .\apps\specialists\models.py:40
+msgid "Filling the application."
+msgstr "Заполнение анкеты."
 
-#: .\api\models.py:35
-msgid "EUR"
-msgstr "Евро"
+#: .\apps\specialists\models.py:41
+msgid "Pending diploma confirmation."
+msgstr "Ожидание подтверждения диплома."
 
-#: .\api\models.py:36
-msgid "RUB"
-msgstr "Руб"
+#: .\apps\specialists\models.py:42
+msgid "Corrections are required."
+msgstr "Необходимы правки."
 
-#: .\api\models.py:49
-msgid "Specialist's appointment"
-msgstr "Прием специалиста"
+#: .\apps\specialists\models.py:43
+msgid "Pending payment."
+msgstr "Ожидание оплаты."
 
-#: .\config\settings.py:106
-msgid "English"
-msgstr "Английский"
+#: .\apps\specialists\models.py:44
+msgid "Active therapist."
+msgstr "Активный."
 
-#: .\config\settings.py:107
-msgid "Russian"
-msgstr "Русский"
+#: .\apps\specialists\models.py:121
+msgid "Please comment the status."
+msgstr "Пожалуйста, прокомментируйте статус."
 
-#: .\users\managers.py:15
+#: .\apps\specialists\serializers.py:21
+msgid "You have already added this address"
+msgstr "Вы уже ранее добавили этот адрес."
+
+#: .\apps\specialists\serializers.py:53
+msgid "You have already added this service."
+msgstr "Вы уже ранее добавили эту услугу."
+
+#: .\apps\specialists\serializers.py:99
+msgid "Existing phone number."
+msgstr "Номер телефона уже есть в базе данных."
+
+#: .\apps\specialists\utils.py:20
+msgid "Enter radius as integer in range from 1 to "
+msgstr "Введите радиус как целое число от 1 до "
+
+#: .\apps\specialists\utils.py:30
+msgid "Enter laitude & longitude separated by comma."
+msgstr "Введите широту и долготу, разделенные запятой."
+
+#: .\apps\specialists\utils.py:38
+msgid "Prices should be integers"
+msgstr "Цены должны быть целыми числами."
+
+#: .\apps\users\models.py:20
 msgid "The Email must be set"
-msgstr "Необходимо указать e-mail"
+msgstr "Необходимо указать e-mail."
 
-#: .\users\managers.py:31
+#: .\apps\users\models.py:36
 msgid "Superuser must have is_staff=True."
 msgstr "Superuser должен иметь значение is_staff=True."
 
-#: .\users\managers.py:33
+#: .\apps\users\models.py:38
 msgid "Superuser must have is_superuser=True."
 msgstr "Superuser должен иметь значение is_superuser=True."
 
+#~ msgid "Application should be filled in"
+#~ msgstr "Необходимо заполнить анкеты"

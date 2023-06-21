@@ -16,6 +16,7 @@ from .validators import validate_year
 class Specialist(CustomUser):
     """Class for creating a user: Specialists."""
     role = CustomUser.Role.SPECIALIST
+
     objects = SpecialistManager()
 
     class Meta:
@@ -36,11 +37,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 class SpecialistProfile(models.Model):
     """The  model for specialist profile: 1to1 with Specialist."""
     class Status(models.TextChoices):
-        FILLING = 'FILLING', _('Application should be filled in')
-        CHECKING = 'CHECKING', _('Pending diploma confirmation')
-        CORRECTING = 'CORRECTING', _('Corrections are required')
-        PENDING_PAYMENT = 'PAYMENT', _('Pending payment')
-        ACTIVE = 'ACTIVE', _('Active therapist')
+        FILLING = 'FILLING', _('Filling the application.')
+        CHECKING = 'CHECKING', _('Pending diploma confirmation.')
+        CORRECTING = 'CORRECTING', _('Corrections are required.')
+        PAYING = 'PAYMENT', _('Pending payment.')
+        ACTIVE = 'ACTIVE', _('Active therapist.')
 
     specialist = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile'
@@ -98,7 +99,7 @@ class SpecialistProfile(models.Model):
         verbose_name_plural = 'Specialists Profiles'
 
     def save(self, **kwargs):
-        """Translate about, transliterate first & last name."""
+        """Translate blank about, transliterate first & last name."""
         self.first_name_en, self.first_name_ru = transliterate_field(
             self.first_name_en, self.first_name_ru)
         self.last_name_en, self.last_name_ru = transliterate_field(
@@ -145,6 +146,7 @@ class Address(models.Model):
         return f'{self.loc_latitude}, {self.loc_longitude}'
 
     def save(self, **kwargs):
+        """Translating blank description field"""
         self.description_en, self.description_ru = translate_field(
             self.description_en, self.description_ru)
         super(Address, self).save()
@@ -190,6 +192,7 @@ class Service(models.Model):
         return f'{self.name_service} - {self.price} {self.currency}'
 
     def save(self, **kwargs):
+        """Translates blank name & description fields"""
         self.name_service_en, self.name_service_ru = translate_field(
             self.name_service_en, self.name_service_ru)
         self.description_en, self.description_ru = translate_field(

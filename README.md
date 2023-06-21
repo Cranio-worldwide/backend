@@ -26,10 +26,7 @@ docker-compose exec backend python manage.py migrate
 ```
 ### Fill DB with fixtures for tests
 ```
->>> csv files with users, addresses, services, news
-docker-compose exec backend python manage.py import_csv
->>> json with translation of static content for frontend
-docker-compose exec backend python manage.py import_json
+docker-compose exec backend python manage.py loaddata fixtures.json
 ```
 ### .env file template
 ```
@@ -40,6 +37,12 @@ POSTGRES_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
 SECRET_KEY='djangosercretkey!!1'
+
+EMAIL_HOST_USER=youremail@domain.com
+EMAIL_HOST_PASSWORD=passwordhere
+EMAIL_HOST=smtp.provider.com
+EMAIL_PORT=587
+
 ```
 ### API Documentation
 http://127.0.0.1:8000/redoc/

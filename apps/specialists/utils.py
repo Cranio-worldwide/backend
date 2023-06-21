@@ -2,6 +2,7 @@ from math import cos, pi
 
 from django.db.models import DecimalField, F, Max, Min
 from django.db.models.functions import Sqrt
+from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ParseError
 
 from apps.core.consts import (
@@ -13,20 +14,20 @@ def clean_radius(radius):
     try:
         radius = int(radius)
         assert 0 < radius <= MAX_SEARCH_RADIUS
-        # assert radius > 0
         return radius
     except (ValueError, AssertionError):
         raise ParseError(
-            f'Enter radius as integer in range from 1 to {MAX_SEARCH_RADIUS}'
+            _('Enter radius as integer in range from 1 to ') + f'{MAX_SEARCH_RADIUS}.'
         )
 
 
 def clean_coordinates(coordinates):
     try:
-        coordinates = map(float, coordinates.split(','))
-        return coordinates
-    except (ValueError, AttributeError):
-        raise ParseError('Enter laitude & longitude separated by comma.')
+        coordinates = coordinates.split(',')
+        assert len(coordinates) == 2
+        return map(float, coordinates)
+    except (ValueError, AttributeError, AssertionError):
+        raise ParseError(_('Enter laitude & longitude separated by comma.'))
 
 
 def clean_price_filter(price):
@@ -34,12 +35,12 @@ def clean_price_filter(price):
         price = int(price)
         return price
     except ValueError:
-        raise ParseError('Prices should be integers')
+        raise ParseError(_('Prices should be integers'))
 
 
 def filter_qs(queryset, query_params):
     radius = clean_radius(query_params.get('radius', DEFAULT_SEARCH_RADIUS))
-    point_lat, point_lon = clean_coordinates(query_params['coordinates'])
+    point_lat, point_lon = clean_coordinates(query_params.get('coordinates'))
 
     radius_in_degree = radius / KM_IN_DEGREE
     km_in_lon_degree = cos(point_lat / HALF_CIRCLE * pi) * KM_IN_DEGREE

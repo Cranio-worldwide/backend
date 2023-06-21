@@ -130,9 +130,7 @@ class SearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('loc_latitude', 'loc_longitude', 'description', 'distance',
-                  'min_price', 'max_price',
-                  'currency',
-                  'specialist')
+                  'min_price', 'max_price', 'currency', 'specialist')
         model = Address
 
     def get_currency(self, address):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 10:43+0300\n"
+"POT-Creation-Date: 2023-06-21 10:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,38 +18,62 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\api\models.py:34
-msgid "USD"
+#: .\apps\specialists\models.py:40
+msgid "Filling the application."
 msgstr ""
 
-#: .\api\models.py:35
-msgid "EUR"
+#: .\apps\specialists\models.py:41
+msgid "Pending diploma confirmation."
 msgstr ""
 
-#: .\api\models.py:36
-msgid "RUB"
+#: .\apps\specialists\models.py:42
+msgid "Corrections are required."
 msgstr ""
 
-#: .\api\models.py:49
-msgid "Specialist's appointment"
+#: .\apps\specialists\models.py:43
+msgid "Pending payment."
 msgstr ""
 
-#: .\config\settings.py:106
-msgid "English"
+#: .\apps\specialists\models.py:44
+msgid "Active therapist."
 msgstr ""
 
-#: .\config\settings.py:107
-msgid "Russian"
+#: .\apps\specialists\models.py:121
+msgid "Please comment the status."
 msgstr ""
 
-#: .\users\managers.py:15
+#: .\apps\specialists\serializers.py:21
+msgid "You have already added this address"
+msgstr ""
+
+#: .\apps\specialists\serializers.py:53
+msgid "You have already added this service."
+msgstr ""
+
+#: .\apps\specialists\serializers.py:99
+msgid "Existing phone number."
+msgstr ""
+
+#: .\apps\specialists\utils.py:20
+msgid "Enter radius as integer in range from 1 to "
+msgstr ""
+
+#: .\apps\specialists\utils.py:30
+msgid "Enter laitude & longitude separated by comma."
+msgstr ""
+
+#: .\apps\specialists\utils.py:38
+msgid "Prices should be integers"
+msgstr ""
+
+#: .\apps\users\models.py:20
 msgid "The Email must be set"
 msgstr ""
 
-#: .\users\managers.py:31
+#: .\apps\users\models.py:36
 msgid "Superuser must have is_staff=True."
 msgstr ""
 
-#: .\users\managers.py:33
+#: .\apps\users\models.py:38
 msgid "Superuser must have is_superuser=True."
 msgstr ""
