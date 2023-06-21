@@ -51,7 +51,8 @@ def filter_qs(queryset, query_params):
                loc_latitude__lt=(point_lat + radius_in_degree),
                loc_longitude__gt=(point_lon - radius_in_degree),
                loc_longitude__lt=(point_lon + radius_in_degree),
-               specialist__profile__status='ACTIVE').
+               specialist__profile__status='ACTIVE',
+               specialist__services__isnull=False).
         annotate(
             distance=Sqrt(
                 (
