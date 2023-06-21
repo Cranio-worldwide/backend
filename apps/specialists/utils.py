@@ -17,7 +17,8 @@ def clean_radius(radius):
         return radius
     except (ValueError, AssertionError):
         raise ParseError(
-            _('Enter radius as integer in range from 1 to ') + f'{MAX_SEARCH_RADIUS}.'
+            _('Enter radius as integer in range from 1'
+              ' to ') + f'{MAX_SEARCH_RADIUS}.'
         )
 
 
