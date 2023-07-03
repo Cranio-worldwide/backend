@@ -1,7 +1,7 @@
 from django.utils.translation import get_language_from_request
 from rest_framework import serializers
 
-from .models import News, StaticContent
+from .models import AboutCranio, News, StaticContent
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -26,3 +26,10 @@ class StaticContentSerializer(serializers.ModelSerializer):
         if hasattr(obj, field_name):
             return getattr(obj, field_name)
         return obj.fields_en
+
+
+class AboutCranioSerializer(serializers.ModelSerializer):
+    """Serializer for model AboutCranio - Main page."""
+    class Meta:
+        fields = ('id', 'text', 'image', 'link')
+        model = AboutCranio

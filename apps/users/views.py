@@ -30,8 +30,8 @@ class UserViewSet(DjoserViewSet):
             if request.user.role == CustomUser.Role.ADMIN:
                 serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        elif request.method == "DELETE":
-            return self.destroy(request, *args, **kwargs)
+
+        return self.destroy(request, *args, **kwargs)
 
     @action(["get"], detail=False)
     def me_where(self, request):

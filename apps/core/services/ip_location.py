@@ -8,7 +8,7 @@ def get_user_ip_address(request):
     if user_ip_address:
         ip_address = user_ip_address.split(',')[0]
     else:
-        ip_address = request.META.get('REMOTE_ADDR')
+        return request.META.get('REMOTE_ADDR')
     return ip_address
 
 
