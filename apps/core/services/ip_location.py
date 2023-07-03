@@ -6,10 +6,8 @@ import requests
 def get_user_ip_address(request):
     user_ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
     if user_ip_address:
-        ip_address = user_ip_address.split(',')[0]
-    else:
-        return request.META.get('REMOTE_ADDR')
-    return ip_address
+        return user_ip_address.split(',')[0]
+    return request.META.get('REMOTE_ADDR')
 
 
 def get_geodata(ip_address):
