@@ -7,7 +7,7 @@ from .models import AboutCranio, News, StaticContent
 class NewsSerializer(serializers.ModelSerializer):
     """Serializer for model News."""
     class Meta:
-        fields = ('id', 'date', 'picture', 'description', 'published')
+        fields = ('id', 'date', 'picture', 'title', 'text', 'is_published')
         model = News
 
 
