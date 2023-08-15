@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 
-from .models import Address, Currency, Specialist, SpecialistProfile
+from .models import Address, Currency, Specialist, SpecialistProfile, Language, Specialization
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -116,3 +116,17 @@ class MeSpecialistSerializer(FullSpecialistSerializer):
 
     def get_status(self, obj):
         return obj.profile.get_status_display()
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    """Serializer for list of available Languages."""
+    class Meta:
+        fields = ('id', 'title')
+        model = Language
+
+
+class SpecializationSerializer(serializers.ModelSerializer):
+    """Serializer for list of available Languages."""
+    class Meta:
+        fields = ('id', 'title')
+        model = Specialization

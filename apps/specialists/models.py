@@ -37,8 +37,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class SpecialistProfile(models.Model):
     """The  model for specialist profile: 1to1 with Specialist."""
-
-
     specialist = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile'
     )
@@ -70,10 +68,12 @@ class SpecialistProfile(models.Model):
         verbose_name='Speciality',
         max_length=100,
     )
-    specialization = models.ForeignKey(
-
+    specializations = models.ManyToManyField(
+        'Specialization',
     )
-
+    languages = models.ManyToManyField(
+        'Language',
+    )
 
     class Meta:
         verbose_name = 'Specialist Profile'
@@ -106,7 +106,7 @@ class SpecialistProfile(models.Model):
 
 
 class Address(models.Model):
-    """The model for specialist's place of reception."""
+    """The model for Specialist's place of reception."""
     specialist = models.ForeignKey(
         Specialist,
         related_name='addresses',
@@ -143,31 +143,8 @@ class Address(models.Model):
         super(Address, self).save()
 
 
-class Currency(models.Model):
-    """The Currency model."""
-    slug = models.SlugField(verbose_name='Currency slug')
-    name = models.CharField(verbose_name='Currency name', max_length=20)
-
-    class Meta:
-        verbose_name = 'Currency'
-        verbose_name_plural = 'Currencies'
-
-    def __str__(self):
-        return self.slug
-
-
-class CranioInstitute(models.Model):
-    name = models.CharField(verbose_name='Cranio organization', max_length=250)
-
-    class Meta:
-        verbose_name = 'Organization'
-        verbose_name_plural = 'Organizations'
-
-    def __str__(self):
-        return self.name
-
-
 class Status(models.Model):
+    """Model for status of Specialist's Account"""
     class Stage(models.TextChoices):
         FILLING = 'FILLING', _('Filling out the application.')
         CHECK = 'CHECK', _('Pending diploma confirmation.')
@@ -200,18 +177,18 @@ class Status(models.Model):
         verbose_name_plural = 'Specialists Statuses'
 
     def __str__(self):
-        return self.stage
+        return f'{self.specialist}: {self.stage}'
 
 
-class CranioEducation(models.Model):
-
+class CranioDiploma(models.Model):
+    """Model with data about Specialist's Cranio diploma."""
     specialist = models.OneToOneField(
         Specialist,
         on_delete=models.CASCADE,
-        related_name='education',
+        related_name='diploma',
     )
     diploma_issuer = models.ForeignKey(
-        CranioInstitute,
+        'CranioInstitute',
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -220,11 +197,71 @@ class CranioEducation(models.Model):
         max_length=100,
     )
     diploma_year = models.SmallIntegerField(
-        verbose_name='Year of diploma issue'
+        verbose_name='Year of diploma issue',
+        validators=[validate_year],
     )
-    document = models.FileField(
+    diploma = models.ForeignKey(
+        'Document',
+        on_delete=models.PROTECT,
+    )
+
+    class Meta:
+        verbose_name = 'Education data'
+        verbose_name_plural = 'Education datas'
+
+    def __str__(self):
+        return f'Diploma of {self.specialist}'
+
+
+class TitledModel(models.Model):
+    """Abstract model with unique title."""
+    title = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class Specialization(TitledModel):
+    """Model for Specialists' specialization tags."""
+    class Meta:
+        verbose_name = 'Specialization'
+        verbose_name_plural = 'Specializations'
+
+
+class Language(TitledModel):
+    """Model for Specialists' languages spoken."""
+    class Meta:
+        verbose_name = 'Language'
+        verbose_name_plural = 'Languages'
+
+
+class CranioInstitute(TitledModel):
+    """Model for Cranio educational organizations."""
+    class Meta:
+        verbose_name = 'Organization'
+        verbose_name_plural = 'Organizations'
+
+
+class Document(models.Model):
+    """Model for Specialists' documents/attachments."""
+    specialist = models.ForeignKey(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name='documents',
+    )
+    file = models.FileField(
         verbose_name='Scanned document',
         null=True,
         blank=True,
         upload_to='diplomas/%Y-%m-%d',
     )
+
+    class Meta:
+        verbose_name = 'Document'
+        verbose_name_plural = 'Documents'
+
+    def __str__(self):
+        return f'Document of {self.specialist}'

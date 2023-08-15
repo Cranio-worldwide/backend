@@ -7,17 +7,17 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .utils import filter_qs
-from .models import Address, Currency, Specialist
+from .models import Address, Currency, Specialist, Language, Specialization
 from .permissions import IsSpecialistOrReadOnly
 from .schema import coords, max_price, min_price, radius
 from .serializers import (
     AddressSerializer, CurrencySerializer, FullProfileSerializer,
-    FullSpecialistSerializer, SearchSerializer,
+    FullSpecialistSerializer, SearchSerializer, LanguageSerializer, SpecializationSerializer
 )
 
 
 class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
-    """ViewSet for model Specialists."""
+    """Registered Specialists."""
     queryset = Specialist.objects.prefetch_related('addresses')
     serializer_class = FullSpecialistSerializer
     permission_classes = (IsSpecialistOrReadOnly,)
@@ -42,7 +42,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
 
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
-    """Abstract class for Spec attributes: Addresses"""
+    """Abstract class for Spec attributes: Addresses, Documents."""
     permission_classes = (IsSpecialistOrReadOnly,)
 
     def get_specialist(self):
@@ -54,21 +54,41 @@ class AbstractAttributeViewSet(viewsets.ModelViewSet):
 
 
 class AddressViewSet(AbstractAttributeViewSet):
-    """ViewSet for model Address."""
+    """Specialist's Addresses."""
     serializer_class = AddressSerializer
 
     def get_queryset(self):
         return self.get_specialist().addresses.all()
 
 
+class SpecSpecializationViewSet(AbstractAttributeViewSet):
+    """Specialist's Specializations."""
+    # serializer_class = Spec
+
+    def get_queryset(self):
+        return self.get_specialist().languages.all()
+
+
 class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
-    """Viewset for model Currency."""
+    """Available Currencies."""
     serializer_class = CurrencySerializer
     queryset = Currency.objects.all()
 
 
+class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
+    """Available Languages."""
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+
+
+class SpecializationViewSet(viewsets.ReadOnlyModelViewSet):
+    """Specialist's available specializations."""
+    queryset = Specialization.objects.all()
+    serializer_class = SpecializationSerializer
+
+
 class SearchList(mixins.ListModelMixin, GenericViewSet):
-    """Viewset for search of specialists."""
+    """Search of specialists."""
     serializer_class = SearchSerializer
     pagination_class = LimitOffsetPagination
 
