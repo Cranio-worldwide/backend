@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from djoser.views import UserViewSet as DjoserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 # from djoser import signals
@@ -33,7 +34,7 @@ class UserViewSet(DjoserViewSet):
 
         return self.destroy(request, *args, **kwargs)
 
-    @action(["get"], detail=False)
+    @action(["get"], detail=False, permission_classes=(AllowAny,))
     def me_where(self, request):
         """Returns coordinates of user basing on IP address."""
         ip_address = get_user_ip_address(request)

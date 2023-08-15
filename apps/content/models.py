@@ -14,7 +14,7 @@ class News(models.Model):
         blank=True,
         upload_to='news/%Y-%m-%d'
     )
-    date = models.DateField(
+    date = models.DateTimeField(
         verbose_name='Date of publishment',
         auto_now_add=True,
     )
