@@ -1,0 +1,53 @@
+[
+    {
+        "model": "users.customuser",
+        "pk": "1e0f51d6-2dc5-447b-b33e-c832ec3c49e2",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$7TbeyeXVZLQg4B9cpmimGo$cgHmXvFx+uOEYN5aLZmzjcvnGM/qvnolxSI3MYU3WCI=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "ruslantratata@unexistinggmail.com",
+            "is_staff": false,
+            "is_active": true,
+            "is_verified": false,
+            "date_joined": "2023-06-20T09:27:03.292Z",
+            "role": "SPECIALIST",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "7209012e-9b55-434d-b0e5-460a92ccb7f6",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$EVBWDJbKwieaP01Rq5wIF9$348Tidm5wiDEiSisU8WqDNAsQPiGvfTs6ilhYXV2Slc=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "anton@unexistingyandex.ru",
+            "is_staff": false,
+            "is_active": true,
+            "is_verified": false,
+            "date_joined": "2023-06-20T14:00:36.976Z",
+            "role": "SPECIALIST",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "a39d08bc-ceea-484c-9699-bc3ccb13ccdc",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$NcXw6rHWKUL44nsJIlQ4B6$4K/V4nZNa+M8ZDBRtoEEmJDaXtoyFZExel4h3s9rIXA=",
+            "last_login": "2023-06-20T09:00:15.792Z",
+            "is_superuser": true,
+            "email": "admin@mail.ru",
+            "is_staff": true,
+            "is_active": true,
+            "is_verified": false,
+            "date_joined": "2023-06-20T08:53:13.332Z",
+            "role": "ADMIN",
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]

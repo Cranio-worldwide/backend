@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -36,12 +37,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class SpecialistProfile(models.Model):
     """The  model for specialist profile: 1to1 with Specialist."""
-    class Status(models.TextChoices):
-        FILLING = 'FILLING', _('Filling the application.')
-        CHECKING = 'CHECKING', _('Pending diploma confirmation.')
-        CORRECTING = 'CORRECTING', _('Corrections are required.')
-        PAYING = 'PAYMENT', _('Pending payment.')
-        ACTIVE = 'ACTIVE', _('Active therapist.')
+
 
     specialist = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile'
@@ -59,7 +55,10 @@ class SpecialistProfile(models.Model):
         upload_to='photo/%Y-%m-%d',
     )
     about = models.TextField(
-        verbose_name='About specialist', blank=True)
+        verbose_name='About specialist',
+        blank=True,
+        max_length=2000,
+    )
     phone = models.CharField(
         verbose_name='Phone number',
         max_length=17,
@@ -67,32 +66,14 @@ class SpecialistProfile(models.Model):
         blank=True,
         null=True
     )
-    practice_start = models.PositiveSmallIntegerField(
-        verbose_name='Year of practice start',
-        blank=True,
-        null=True,
-        validators=[validate_year],
-    )
-    diploma_issuer = models.CharField(
-        verbose_name='Organization-issuer of diploma',
-        max_length=255,
-        blank=True
-    )
-    diploma_recipient = models.CharField(
-        verbose_name='Name of diploma recipient mentioned in diploma',
+    speciality = models.CharField(
+        verbose_name='Speciality',
         max_length=100,
-        blank=True,
     )
-    status = models.CharField(
-        verbose_name='Status of specialist',
-        max_length=50,
-        choices=Status.choices,
-        default=Status.FILLING,
+    specialization = models.ForeignKey(
+
     )
-    approver_comments = models.TextField(
-        verbose_name='Admin comments for corrections',
-        blank=True,
-    )
+
 
     class Meta:
         verbose_name = 'Specialist Profile'
@@ -137,6 +118,16 @@ class Address(models.Model):
         verbose_name='Details of address',
         blank=True,
     )
+    min_price = models.IntegerField(
+        verbose_name='Minimal price',
+        validators=[MinValueValidator(1, _('Value should be larger than 0.'))]
+    )
+    currency = models.ForeignKey(
+        'Currency',
+        on_delete=models.SET_DEFAULT,
+        default=3,
+        verbose_name='Currency',
+    )
 
     class Meta:
         verbose_name = 'Address'
@@ -165,36 +156,75 @@ class Currency(models.Model):
         return self.slug
 
 
-class Service(models.Model):
-    """The model for Specialists' services and prices."""
-    specialist = models.ForeignKey(
-        Specialist,
-        related_name='services',
-        on_delete=models.CASCADE,
-    )
-    name_service = models.CharField(
-        verbose_name='Service name',
-        max_length=100,
-    )
-    description = models.TextField(
-        verbose_name='Service detailed description',
-        blank=True,
-    )
-    price = models.PositiveIntegerField(verbose_name='Sevice price')
-    currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
+class CranioInstitute(models.Model):
+    name = models.CharField(verbose_name='Cranio organization', max_length=250)
 
     class Meta:
-        verbose_name = 'Service'
-        verbose_name_plural = 'Services'
-        ordering = ('currency', 'price')
+        verbose_name = 'Organization'
+        verbose_name_plural = 'Organizations'
 
     def __str__(self):
-        return f'{self.name_service} - {self.price} {self.currency}'
+        return self.name
 
-    def save(self, **kwargs):
-        """Translates blank name & description fields"""
-        self.name_service_en, self.name_service_ru = translate_field(
-            self.name_service_en, self.name_service_ru)
-        self.description_en, self.description_ru = translate_field(
-            self.description_en, self.description_ru)
-        super(Service, self).save()
+
+class Status(models.Model):
+    class Stage(models.TextChoices):
+        FILLING = 'FILLING', _('Filling out the application.')
+        CHECK = 'CHECK', _('Pending diploma confirmation.')
+        EDIT = 'EDIT', _('Corrections are required.')
+        PAYING = 'PAYING', _('Pending payment.')
+        ACTIVE = 'ACTIVE', _('Active account.')
+
+    specialist = models.OneToOneField(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name='status',
+    )
+    stage = models.CharField(
+        verbose_name='Status of specialist',
+        max_length=50,
+        choices=Stage.choices,
+        default=Stage.FILLING,
+    )
+    comments = models.TextField(
+        verbose_name='Admin comments for corrections',
+        blank=True,
+    )
+    modified = models.DateTimeField(
+        verbose_name='Last status update',
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = 'Specialist Status'
+        verbose_name_plural = 'Specialists Statuses'
+
+    def __str__(self):
+        return self.stage
+
+
+class CranioEducation(models.Model):
+
+    specialist = models.OneToOneField(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name='education',
+    )
+    diploma_issuer = models.ForeignKey(
+        CranioInstitute,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    diploma_recipient = models.CharField(
+        verbose_name='Name of diploma recipient mentioned in diploma',
+        max_length=100,
+    )
+    diploma_year = models.SmallIntegerField(
+        verbose_name='Year of diploma issue'
+    )
+    document = models.FileField(
+        verbose_name='Scanned document',
+        null=True,
+        blank=True,
+        upload_to='diplomas/%Y-%m-%d',
+    )

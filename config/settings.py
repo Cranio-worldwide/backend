@@ -86,16 +86,6 @@ DATABASES = {
     }
 }
 
-# Для быстрого переключения на SQLite и работы без докера - закоментить код
-# выше и  раскоментить код ниже
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -121,7 +111,7 @@ DJOSER = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24),  # на время разработки, потом 1 час
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24 * 5),  # на время разработки, потом 1 час
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('JWT',),
 }

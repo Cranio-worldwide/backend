@@ -6,14 +6,14 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 
-from .models import Address, Currency, Service, Specialist, SpecialistProfile
+from .models import Address, Currency, Specialist, SpecialistProfile
 
 
 class AddressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
-
     class Meta:
-        fields = ('id', 'loc_latitude', 'loc_longitude', 'description')
+        fields = ('id', 'loc_latitude', 'loc_longitude', 'description',
+                  'min_price', 'currency')
         model = Address
         validators = [UniqueTogetherValidator(
             queryset=Address.objects.all(),
@@ -27,32 +27,6 @@ class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'slug', 'name')
         model = Currency
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-    """Serializer for model Service."""
-    currency = serializers.PrimaryKeyRelatedField(
-        queryset=Currency.objects.all())
-    description = serializers.CharField(required=False)
-
-    class Meta:
-        fields = ('id', 'name_service', 'price', 'currency', 'description')
-        model = Service
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['currency'] = CurrencySerializer(instance.currency).data
-        return rep
-
-    def validate(self, attrs):
-        spec_id = self.context['view'].kwargs.get('specialist_id')
-        service = self.initial_data.get('name_service')
-        if (self.context['request'].method == 'POST' and Service.objects.
-                filter(specialist_id=spec_id, name_service=service).exists()):
-            raise serializers.ValidationError(
-                _('You have already added this service.')
-            )
-        return super().validate(attrs)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -103,10 +77,9 @@ class FullSpecialistSerializer(serializers.ModelSerializer):
     """Serializer for model Specialists - for details page."""
     profile = FullProfileSerializer(read_only=True)
     addresses = AddressSerializer(many=True, read_only=True)
-    services = ServiceSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = ('id', 'email', 'profile', 'addresses', 'services')
+        fields = ('id', 'email', 'profile', 'addresses')
         model = Specialist
 
 
@@ -124,18 +97,11 @@ class SearchSerializer(serializers.ModelSerializer):
     specialist = ShortSpecialistSerializer(read_only=True)
     distance = serializers.DecimalField(max_digits=4, decimal_places=1,
                                         read_only=True)
-    min_price = serializers.IntegerField(read_only=True)
-    max_price = serializers.IntegerField(read_only=True)
-    currency = serializers.SerializerMethodField()
 
     class Meta:
         fields = ('loc_latitude', 'loc_longitude', 'description', 'distance',
-                  'min_price', 'max_price', 'currency', 'specialist')
+                  'min_price', 'currency', 'specialist')
         model = Address
-
-    def get_currency(self, address):
-        currency = address.specialist.services.first().currency
-        return CurrencySerializer(currency).data
 
 
 class MeSpecialistSerializer(FullSpecialistSerializer):

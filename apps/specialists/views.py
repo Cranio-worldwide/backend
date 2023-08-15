@@ -12,13 +12,13 @@ from .permissions import IsSpecialistOrReadOnly
 from .schema import coords, max_price, min_price, radius
 from .serializers import (
     AddressSerializer, CurrencySerializer, FullProfileSerializer,
-    FullSpecialistSerializer, SearchSerializer, ServiceSerializer,
+    FullSpecialistSerializer, SearchSerializer,
 )
 
 
 class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     """ViewSet for model Specialists."""
-    queryset = Specialist.objects.prefetch_related('addresses', 'services')
+    queryset = Specialist.objects.prefetch_related('addresses')
     serializer_class = FullSpecialistSerializer
     permission_classes = (IsSpecialistOrReadOnly,)
 
@@ -30,8 +30,8 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
             serializer = FullProfileSerializer(specialist.profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        if specialist != request.user:
-            return Response()
+        # if specialist != request.user:
+        #     return Response()
         serializer = FullProfileSerializer(
             specialist.profile, data=request.data, partial=True,
             context={'request': request, 'spec_id': pk}
@@ -42,7 +42,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
 
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
-    """Abstract class for Spec attributes: Addresses & Services"""
+    """Abstract class for Spec attributes: Addresses"""
     permission_classes = (IsSpecialistOrReadOnly,)
 
     def get_specialist(self):
@@ -59,14 +59,6 @@ class AddressViewSet(AbstractAttributeViewSet):
 
     def get_queryset(self):
         return self.get_specialist().addresses.all()
-
-
-class ServiceViewSet(AbstractAttributeViewSet):
-    """ViewSet for model Service."""
-    serializer_class = ServiceSerializer
-
-    def get_queryset(self):
-        return self.get_specialist().services.all()
 
 
 class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
