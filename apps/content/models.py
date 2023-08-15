@@ -38,6 +38,7 @@ class AboutCranio(models.Model):
         verbose_name='Picture',
         upload_to='about_cranio/%Y-%m-%d',
     )
+    title = models.CharField(verbose_name='About title', max_length=250)
     text = models.TextField(verbose_name='About')
     link = models.URLField(verbose_name='Link')
     is_published = models.BooleanField(
@@ -46,7 +47,7 @@ class AboutCranio(models.Model):
     )
 
     def __str__(self):
-        return self.text[:15]
+        return self.title
 
     @atomic
     def save(self, **kwargs):
