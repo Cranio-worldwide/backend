@@ -1,12 +1,13 @@
 import base64
 
 from django.core.files.base import ContentFile
+from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-
-from .models import Address, Currency, Specialist, SpecialistProfile, Language, Specialization
+from .models import (Address, Currency, Language, Specialist,
+                     SpecialistProfile, Specialization, SpecSpecialization, SpecLanguage)
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -125,8 +126,55 @@ class LanguageSerializer(serializers.ModelSerializer):
         model = Language
 
 
+class SpecLanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('language')
+        model = SpecLanguage
+
+    def validate(self, data):
+        specialist = self.context['request'].user
+        lang_id = data.get('language')
+        if specialist.languages.filter(id=lang_id).exists():
+            raise serializers.ValidationError(
+                _('This language has already been added.')
+            )
+        return data
+
+    @atomic
+    def create(self, validated_data):
+        user = self.context['request'].user
+        lang_id = validated_data.get('title')
+        specialization, _ = Specialization.objects.get_or_create(title=spec_title)
+        SpecSpecialization.objects.create(specialist=user, specialization=specialization)
+        return super().create(validated_data)
+
 class SpecializationSerializer(serializers.ModelSerializer):
     """Serializer for list of available Languages."""
     class Meta:
         fields = ('id', 'title')
         model = Specialization
+
+
+class SpecSpecializationSerializer(serializers.ModelSerializer):
+    title = serializers.CharField()
+
+    class Meta:
+        fields = ('title')
+        model = SpecSpecialization
+
+    def validate(self, data):
+        specialist = self.context['request'].user
+        spec_title = data.get('title').capitalize()
+        if specialist.specializations.filter(title=spec_title).exists():
+            raise serializers.ValidationError(
+                _('This specialization has already been added.')
+            )
+        return data
+
+    @atomic
+    def create(self, validated_data):
+        user = self.context['request'].user
+        spec_title = validated_data.get('title').capitalize()
+        specialization, _ = Specialization.objects.get_or_create(title=spec_title)
+        SpecSpecialization.objects.create(specialist=user, specialization=specialization)
+        return super().create(validated_data)

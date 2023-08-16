@@ -265,3 +265,13 @@ class Document(models.Model):
 
     def __str__(self):
         return f'Document of {self.specialist}'
+
+
+class SpecLanguage(models.Model):
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
+
+
+class SpecSpecialization(models.Model):
+    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)

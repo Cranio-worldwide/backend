@@ -7,12 +7,12 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .utils import filter_qs
-from .models import Address, Currency, Specialist, Language, Specialization
+from .models import Address, Currency, Specialist, Language, Specialization, SpecLanguage, SpecSpecialization
 from .permissions import IsSpecialistOrReadOnly
 from .schema import coords, max_price, min_price, radius
 from .serializers import (
     AddressSerializer, CurrencySerializer, FullProfileSerializer,
-    FullSpecialistSerializer, SearchSerializer, LanguageSerializer, SpecializationSerializer
+    FullSpecialistSerializer, SearchSerializer, LanguageSerializer, SpecializationSerializer, SpecLanguageSerializer, SpecSpecializationSerializer
 )
 
 
@@ -39,6 +39,37 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def languages(self, request, pk):
+        user = request.user
+        serializer = SpecLanguageSerializer(data=request.data, context={'view': self, 'request': request})
+        if request.method == 'POST':
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        language = request.data.get('language')
+        deleted, _ = SpecLanguage.objects.filter(language_id=language, specialist=user).delete()
+        if deleted:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def specializations(self, request, pk):
+        user = request.user
+        serializer = SpecSpecializationSerializer(data=request.data, context={'view': self, 'request': request})
+        if request.method == 'POST':
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        specialization = request.data.get('title')
+        deleted, _ = SpecSpecialization.objects.filter(specialization__title=specialization, specialist=user).delete()
+        if deleted:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
