@@ -3,56 +3,94 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .utils import filter_qs
 from .mixins import SpecBasedMixin
-from .models import Address, Currency, Specialist, Language, Specialization, SpecLanguage, SpecSpecialization
+from .models import Address, Currency, Specialist, Language, Specialization, CranioDiploma, Status
 from .permissions import IsSpecialistOrReadOnly
 from .schema import coords, max_price, min_price, radius
 from .serializers import (
-    AddressSerializer, CurrencySerializer, FullProfileSerializer,
-    FullSpecialistSerializer, SearchSerializer, LanguageSerializer, SpecializationSerializer, SpecLanguageSerializer, SpecSpecializationSerializer
+    AddressSerializer, CurrencySerializer, FullProfileSerializer, SpecialistSerializer,
+    FullSpecialistSerializer, SearchSerializer, LanguageSerializer, SpecializationSerializer,
+    CranioDiplomaSerializer, StatusSerializer,
 )
 
 
-class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
+class SpecialistViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
     """Registered Specialists."""
     queryset = Specialist.objects.prefetch_related('addresses')
-    serializer_class = FullSpecialistSerializer
+    serializer_class = SpecialistSerializer
     permission_classes = (IsSpecialistOrReadOnly,)
+    parser_classes = (MultiPartParser, FormParser)
 
-    @action(methods=['GET', 'PATCH'], detail=True, url_path='profile')
-    def specialists_profile(self, request, pk):
-        specialist = get_object_or_404(Specialist, pk=pk)
+    @action(methods=['GET'], detail=True)
+    def diploma(self, request, pk):
+        diploma = get_object_or_404(CranioDiploma, user_id=pk)
+        serializer = CranioDiplomaSerializer(diploma)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        if request.method == 'GET':
-            serializer = FullProfileSerializer(specialist.profile)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        # if specialist != request.user:
-        #     return Response()
-        serializer = FullProfileSerializer(
-            specialist.profile, data=request.data, partial=True,
-            context={'request': request, 'spec_id': pk}
-        )
+    @action(methods=['POST'], detail=False, permission_classes=(IsAuthenticated,))
+    def verify_diploma(self, request):
+        serializer = CranioDiplomaSerializer(data=request.data, context={'view': self, 'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['POST', 'GET'], detail=True)
-    def languages(self, request, user_id):
-        request.data['specialist_id'] = user_id
-        if request.method == 'GET':
-            queryset = request.user.languages.all()
-            serializer = SpecLanguageSerializer(queryset, many=True, context={'view': self, 'request': request})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    @action(methods=['GET'], detail=True)
+    def profile_status(self, request, pk):
+        status = get_object_or_404(Status, specialist_id=pk)
+        serializer = StatusSerializer(status)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        serializer = SpecLanguageSerializer(data=request.data, many=True, context={'view': self, 'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+
+
+# class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
+#     """Registered Specialists."""
+#     queryset = Specialist.objects.prefetch_related('addresses')
+#     serializer_class = FullSpecialistSerializer
+#     permission_classes = (IsSpecialistOrReadOnly,)
+
+#     @action(methods=['GET', 'PATCH'], detail=True, url_path='profile')
+#     def specialists_profile(self, request, pk):
+#         specialist = get_object_or_404(Specialist, pk=pk)
+
+#         if request.method == 'GET':
+#             serializer = FullProfileSerializer(specialist.profile)
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+
+#         # if specialist != request.user:
+#         #     return Response()
+#         serializer = FullProfileSerializer(
+#             specialist.profile, data=request.data, partial=True,
+#             context={'request': request, 'spec_id': pk}
+#         )
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # @action(methods=['POST', 'GET'], detail=True)
+    # def languages(self, request, user_id):
+    #     request.data['specialist_id'] = user_id
+    #     if request.method == 'GET':
+    #         queryset = request.user.languages.all()
+    #         serializer = SpecLanguageSerializer(queryset, many=True, context={'view': self, 'request': request})
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    #     serializer = SpecLanguageSerializer(data=request.data, many=True, context={'view': self, 'request': request})
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
     # @action(methods=['POST', 'DELETE'], detail=True)
@@ -71,16 +109,16 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     #     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class AbstractAttributeViewSet(viewsets.ModelViewSet):
-    """Abstract class for Spec attributes: Addresses, Documents."""
-    permission_classes = (IsSpecialistOrReadOnly,)
+# class AbstractAttributeViewSet(viewsets.ModelViewSet):
+#     """Abstract class for Spec attributes: Addresses, Documents."""
+#     permission_classes = (IsSpecialistOrReadOnly,)
 
-    def get_specialist(self):
-        return get_object_or_404(Specialist,
-                                 pk=self.kwargs.get('specialist_id'))
+#     def get_specialist(self):
+#         return get_object_or_404(Specialist,
+#                                  pk=self.kwargs.get('specialist_id'))
 
-    def perform_create(self, serializer):
-        serializer.save(specialist=self.request.user)
+#     def perform_create(self, serializer):
+#         serializer.save(specialist=self.request.user)
 
 
 class AddressViewSet(SpecBasedMixin, viewsets.ModelViewSet):

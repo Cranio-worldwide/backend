@@ -13,7 +13,7 @@ class NewsAdmin(TranslationAdmin):
 
 @admin.register(AboutCranio)
 class AboutCranioAdmin(TranslationAdmin):
-    list_display = ('id', 'text', 'is_published')
+    list_display = ('id', 'text', 'title', 'is_published')
     search_fields = ('text',)
     empty_value_display = '-пусто-'
 

@@ -1,13 +1,13 @@
 from modeltranslation.translator import TranslationOptions, register
 
 from .models import (
-    Address, Currency, SpecialistProfile,
+    Address, Currency, Specialist, Language, Specialization, ServiceType
 )
 
 
-@register(SpecialistProfile)
-class SpecialistProfileTranslationOptions(TranslationOptions):
-    fields = ('first_name', 'last_name', 'about')
+@register(Specialist)
+class SpecialistTranslationOptions(TranslationOptions):
+    fields = ('about', 'speciality')
 
 
 @register(Address)
@@ -18,3 +18,18 @@ class AddressTranslationOptions(TranslationOptions):
 @register(Currency)
 class CurrencyTranslationOptions(TranslationOptions):
     fields = ('name',)
+
+
+@register(Language)
+class LanguageTranslationOptions(TranslationOptions):
+    fields = ('title',)
+
+
+@register(Specialization)
+class SpecializationTranslationOptions(TranslationOptions):
+    fields = ('title',)
+
+
+@register(ServiceType)
+class ServiceTypeTranslationOptions(TranslationOptions):
+    fields = ('title',)

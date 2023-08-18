@@ -14,61 +14,26 @@ from .managers import SpecialistManager
 from .validators import validate_year
 
 
-class Specialist(CustomUser):
-    """Class for creating a user: Specialists."""
-    role = CustomUser.Role.SPECIALIST
-
-    objects = SpecialistManager()
-
-    class Meta:
-        proxy = True
-        verbose_name = 'Specialist'
-        verbose_name_plural = 'Specialists'
-
-    def __str__(self):
-        return self.email
-
-
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created and instance.role == 'SPECIALIST':
-        SpecialistProfile.objects.create(specialist=instance)
-
-
-class SpecialistProfile(models.Model):
+class Specialist(models.Model):
     """The  model for specialist profile: 1to1 with Specialist."""
-    specialist = models.OneToOneField(
+    id = models.UUIDField(primary_key=True)
+    user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile'
     )
-    first_name = models.CharField(
-        verbose_name='First name', blank=True, max_length=150
-    )
-    last_name = models.CharField(
-        verbose_name='Last name', blank=True, max_length=150
-    )
-    photo = models.ImageField(
-        verbose_name="Specialist's photo",
-        null=True,
-        blank=True,
-        upload_to='photo/%Y-%m-%d',
-    )
-    about = models.TextField(
-        verbose_name='About specialist',
-        blank=True,
-        max_length=2000,
-    )
-    phone = models.CharField(
-        verbose_name='Phone number',
-        max_length=17,
-        unique=True,
-        blank=True,
-        null=True
-    )
+    about = models.TextField(verbose_name='About specialist', blank=True)
     speciality = models.CharField(
         verbose_name='Speciality',
         max_length=100,
     )
-
+    languages = models.ManyToManyField(
+        'Language',
+    )
+    specializations = models.ManyToManyField(
+        'Specialization'
+    )
+    service_types = models.ManyToManyField(
+        'ServiceType'
+    )
 
     class Meta:
         verbose_name = 'Specialist Profile'
@@ -76,13 +41,13 @@ class SpecialistProfile(models.Model):
 
     def save(self, **kwargs):
         """Translate blank about, transliterate first & last name."""
-        self.first_name_en, self.first_name_ru = transliterate_field(
-            self.first_name_en, self.first_name_ru)
-        self.last_name_en, self.last_name_ru = transliterate_field(
-            self.last_name_en, self.last_name_ru)
+        if not self.pk:
+            self.id = self.user.id
         self.about_en, self.about_ru = translate_field(
             self.about_en, self.about_ru)
-        super(SpecialistProfile, self).save()
+        self.speciality_en, self.speciality_ru = translate_field(
+            self.speciality_en, self.speciality_ru)
+        super(Specialist, self).save()
 
     def __str__(self):
         return f'{self.specialist}: {self.first_name} {self.last_name}'
@@ -177,7 +142,7 @@ class Status(models.Model):
     )
     modified = models.DateTimeField(
         verbose_name='Last status update',
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
@@ -195,22 +160,18 @@ class CranioDiploma(models.Model):
         on_delete=models.CASCADE,
         related_name='diploma',
     )
-    diploma_issuer = models.ForeignKey(
+    organization = models.ForeignKey(
         'CranioInstitute',
         on_delete=models.SET_NULL,
         null=True,
     )
-    diploma_recipient = models.CharField(
-        verbose_name='Name of diploma recipient mentioned in diploma',
-        max_length=100,
-    )
-    diploma_year = models.SmallIntegerField(
+    year = models.SmallIntegerField(
         verbose_name='Year of diploma issue',
         validators=[validate_year],
     )
-    diploma = models.ForeignKey(
-        'Document',
-        on_delete=models.PROTECT,
+    file = models.FileField(
+        verbose_name='Scanned diploma',
+        upload_to='diplomas/%Y-%m-%d',
     )
 
     class Meta:
@@ -234,11 +195,6 @@ class TitledModel(models.Model):
 
 class Specialization(TitledModel):
     """Model for Specialists' specialization tags."""
-    specialist = models.ManyToManyField(
-        Specialist,
-        through='SpecSpecialization',
-        related_name='specializations',
-    )
 
     class Meta:
         verbose_name = 'Specialization'
@@ -247,15 +203,16 @@ class Specialization(TitledModel):
 
 class Language(TitledModel):
     """Model for Specialists' languages spoken."""
-    specialist = models.ManyToManyField(
-        Specialist,
-        through='SpecLanguage',
-        related_name='languages',
-    )
 
     class Meta:
         verbose_name = 'Language'
         verbose_name_plural = 'Languages'
+
+
+class ServiceType(TitledModel):
+    class Meta:
+        verbose_name = "Type of services"
+        verbose_name_plural = 'Types of services'
 
 
 class CranioInstitute(TitledModel):
@@ -274,8 +231,6 @@ class Document(models.Model):
     )
     file = models.FileField(
         verbose_name='Scanned document',
-        null=True,
-        blank=True,
         upload_to='diplomas/%Y-%m-%d',
     )
 
@@ -287,27 +242,27 @@ class Document(models.Model):
         return f'Document of {self.specialist}'
 
 
-class SpecLanguage(models.Model):
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
+# class SpecLanguage(models.Model):
+#     language = models.ForeignKey(Language, on_delete=models.CASCADE)
+#     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name = "Specialist's Language"
-        verbose_name_plural = "Specialist's Languages"
-        default_related_name = 'spec_lang'
+#     class Meta:
+#         verbose_name = "Specialist's Language"
+#         verbose_name_plural = "Specialist's Languages"
+#         default_related_name = 'spec_lang'
 
-    def __str__(self):
-        return f'{self.specialist} speaks {self.language}'
+#     def __str__(self):
+#         return f'{self.specialist} speaks {self.language}'
 
 
-class SpecSpecialization(models.Model):
-    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
-    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
+# class SpecSpecialization(models.Model):
+#     specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
+#     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name = "Specialist's Language"
-        verbose_name_plural = "Specialist's Languages"
-        default_related_name = 'spec_spec'
+#     class Meta:
+#         verbose_name = "Specialist's Language"
+#         verbose_name_plural = "Specialist's Languages"
+#         default_related_name = 'spec_spec'
 
-    def __str__(self):
-        return f'{self.specialist} specialized in {self.specialization}'
+#     def __str__(self):
+#         return f'{self.specialist} specialized in {self.specialization}'

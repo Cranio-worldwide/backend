@@ -1,12 +1,13 @@
 from django.db import models
 from django.db.transaction import atomic
 
+from apps.specialists.models import TitledModel
 
-class News(models.Model):
+
+class News(TitledModel):
     """
     The model for news published by site staff
     """
-    title = models.CharField(verbose_name='News title', max_length=250)
     text = models.TextField(verbose_name='News text')
     picture = models.ImageField(
         verbose_name='Picture',
@@ -28,25 +29,20 @@ class News(models.Model):
         verbose_name_plural = 'News'
         ordering = ('-date',)
 
-    def __str__(self):
-        return self.title
 
-
-class AboutCranio(models.Model):
+class AboutCranio(TitledModel):
     """The model for static block on Main page."""
     image = models.ImageField(
         verbose_name='Picture',
         upload_to='about_cranio/%Y-%m-%d',
     )
+    
     text = models.TextField(verbose_name='About')
     link = models.URLField(verbose_name='Link')
     is_published = models.BooleanField(
         verbose_name='Show on main page',
         default=True,
     )
-
-    def __str__(self):
-        return self.text[:15]
 
     @atomic
     def save(self, **kwargs):

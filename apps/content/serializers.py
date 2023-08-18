@@ -31,5 +31,5 @@ class StaticContentSerializer(serializers.ModelSerializer):
 class AboutCranioSerializer(serializers.ModelSerializer):
     """Serializer for model AboutCranio - Main page."""
     class Meta:
-        fields = ('id', 'text', 'image', 'link')
+        fields = ('id', 'text', 'title', 'image', 'link')
         model = AboutCranio

@@ -10,4 +10,4 @@ class NewsTranslationOptions(TranslationOptions):
 
 @register(AboutCranio)
 class AboutCranioTranslationOptions(TranslationOptions):
-    fields = ('text',)
+    fields = ('title', 'text')
