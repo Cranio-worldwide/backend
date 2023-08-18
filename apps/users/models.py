@@ -31,7 +31,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('role', 'ADMIN')
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
@@ -43,23 +42,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     Base class for user registration, email is used instead of username.
     """
-    class Role(models.TextChoices):
-        SPECIALIST = 'SPECIALIST', 'Specialist'
-        CUSTOMER = 'CUSTOMER', 'Customer'
-        ADMIN = 'ADMIN', 'Admin'
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField('email address', unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
+    is_specialist = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    role = models.CharField(
-        verbose_name='user role',
-        max_length=50,
-        choices=Role.choices,
-        default=Role.SPECIALIST,
-    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

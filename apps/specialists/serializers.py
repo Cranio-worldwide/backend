@@ -109,14 +109,14 @@ class MeSpecialistSerializer(FullSpecialistSerializer):
     """Specialist serializer for Personal Area - /me endpoint."""
     status = serializers.SerializerMethodField()
     approver_comments = serializers.CharField(
-        source='profile.approver_comments')
+        source='status.approver_comments')
 
     class Meta(FullSpecialistSerializer.Meta):
         fields = FullSpecialistSerializer.Meta.fields + (
             'status', 'approver_comments')
 
     def get_status(self, obj):
-        return obj.profile.get_status_display()
+        return obj.status.get_stage_display()
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -131,22 +131,24 @@ class SpecLanguageSerializer(serializers.ModelSerializer):
         fields = ('language')
         model = SpecLanguage
 
-    def validate(self, data):
-        specialist = self.context['request'].user
-        lang_id = data.get('language')
-        if specialist.languages.filter(id=lang_id).exists():
-            raise serializers.ValidationError(
-                _('This language has already been added.')
-            )
-        return data
+    # @atomic
+    # def create(self, validated_data):
+    #     user = self.context['request'].user
+    #     lang_id = validated_data.get('title')
+    #     specialization, _ = Specialization.objects.get_or_create(title=lang_id)
+    #     SpecSpecialization.objects.create(specialist=user, specialization=specialization)
+    #     return super().create(validated_data)
 
     @atomic
     def create(self, validated_data):
-        user = self.context['request'].user
-        lang_id = validated_data.get('title')
-        specialization, _ = Specialization.objects.get_or_create(title=spec_title)
-        SpecSpecialization.objects.create(specialist=user, specialization=specialization)
+        spoken_langs = []
+        for data_set in validated_data:
+            spec_id = data_set.get('specialist_id')
+            lang_id = data_set.get('language')
+            spoken_langs.append(SpecLanguage(specialist=spec_id, language=lang_id))
+        SpecLanguage.objects.bulk_create(spoken_langs)
         return super().create(validated_data)
+
 
 class SpecializationSerializer(serializers.ModelSerializer):
     """Serializer for list of available Languages."""

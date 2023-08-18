@@ -68,12 +68,7 @@ class SpecialistProfile(models.Model):
         verbose_name='Speciality',
         max_length=100,
     )
-    specializations = models.ManyToManyField(
-        'Specialization',
-    )
-    languages = models.ManyToManyField(
-        'Language',
-    )
+
 
     class Meta:
         verbose_name = 'Specialist Profile'
@@ -103,6 +98,19 @@ class SpecialistProfile(models.Model):
         if (self.approver_comments and self.status not in [
                 self.Status.CORRECTING, self.Status.CHECKING]):
             self.approver_comments = ''
+
+
+class Currency(models.Model):
+    """The Currency model."""
+    slug = models.SlugField(verbose_name='Currency slug')
+    name = models.CharField(verbose_name='Currency name', max_length=20)
+
+    class Meta:
+        verbose_name = 'Currency'
+        verbose_name_plural = 'Currencies'
+
+    def __str__(self):
+        return self.slug
 
 
 class Address(models.Model):
@@ -226,6 +234,12 @@ class TitledModel(models.Model):
 
 class Specialization(TitledModel):
     """Model for Specialists' specialization tags."""
+    specialist = models.ManyToManyField(
+        Specialist,
+        through='SpecSpecialization',
+        related_name='specializations',
+    )
+
     class Meta:
         verbose_name = 'Specialization'
         verbose_name_plural = 'Specializations'
@@ -233,6 +247,12 @@ class Specialization(TitledModel):
 
 class Language(TitledModel):
     """Model for Specialists' languages spoken."""
+    specialist = models.ManyToManyField(
+        Specialist,
+        through='SpecLanguage',
+        related_name='languages',
+    )
+
     class Meta:
         verbose_name = 'Language'
         verbose_name_plural = 'Languages'
@@ -271,7 +291,23 @@ class SpecLanguage(models.Model):
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name = "Specialist's Language"
+        verbose_name_plural = "Specialist's Languages"
+        default_related_name = 'spec_lang'
+
+    def __str__(self):
+        return f'{self.specialist} speaks {self.language}'
+
 
 class SpecSpecialization(models.Model):
     specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Specialist's Language"
+        verbose_name_plural = "Specialist's Languages"
+        default_related_name = 'spec_spec'
+
+    def __str__(self):
+        return f'{self.specialist} specialized in {self.specialization}'

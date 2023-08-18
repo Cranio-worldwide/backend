@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .utils import filter_qs
+from .mixins import SpecBasedMixin
 from .models import Address, Currency, Specialist, Language, Specialization, SpecLanguage, SpecSpecialization
 from .permissions import IsSpecialistOrReadOnly
 from .schema import coords, max_price, min_price, radius
@@ -40,36 +41,34 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, GenericViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['POST', 'DELETE'], detail=True)
-    def languages(self, request, pk):
-        user = request.user
-        serializer = SpecLanguageSerializer(data=request.data, context={'view': self, 'request': request})
-        if request.method == 'POST':
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @action(methods=['POST', 'GET'], detail=True)
+    def languages(self, request, user_id):
+        request.data['specialist_id'] = user_id
+        if request.method == 'GET':
+            queryset = request.user.languages.all()
+            serializer = SpecLanguageSerializer(queryset, many=True, context={'view': self, 'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-        language = request.data.get('language')
-        deleted, _ = SpecLanguage.objects.filter(language_id=language, specialist=user).delete()
-        if deleted:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = SpecLanguageSerializer(data=request.data, many=True, context={'view': self, 'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-    @action(methods=['POST', 'DELETE'], detail=True)
-    def specializations(self, request, pk):
-        user = request.user
-        serializer = SpecSpecializationSerializer(data=request.data, context={'view': self, 'request': request})
-        if request.method == 'POST':
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # @action(methods=['POST', 'DELETE'], detail=True)
+    # def specializations(self, request, pk):
+    #     user = request.user
+    #     serializer = SpecSpecializationSerializer(data=request.data, context={'view': self, 'request': request})
+    #     if request.method == 'POST':
+    #         serializer.is_valid(raise_exception=True)
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        specialization = request.data.get('title')
-        deleted, _ = SpecSpecialization.objects.filter(specialization__title=specialization, specialist=user).delete()
-        if deleted:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    #     specialization = request.data.get('title')
+    #     deleted, _ = SpecSpecialization.objects.filter(specialization__title=specialization, specialist=user).delete()
+    #     if deleted:
+    #         return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class AbstractAttributeViewSet(viewsets.ModelViewSet):
@@ -84,20 +83,12 @@ class AbstractAttributeViewSet(viewsets.ModelViewSet):
         serializer.save(specialist=self.request.user)
 
 
-class AddressViewSet(AbstractAttributeViewSet):
+class AddressViewSet(SpecBasedMixin, viewsets.ModelViewSet):
     """Specialist's Addresses."""
     serializer_class = AddressSerializer
 
     def get_queryset(self):
         return self.get_specialist().addresses.all()
-
-
-class SpecSpecializationViewSet(AbstractAttributeViewSet):
-    """Specialist's Specializations."""
-    # serializer_class = Spec
-
-    def get_queryset(self):
-        return self.get_specialist().languages.all()
 
 
 class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):

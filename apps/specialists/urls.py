@@ -13,10 +13,6 @@ router.register(r'specialists/(?P<specialist_id>[0-9a-f-]+)/addresses',
                 AddressViewSet, basename='addresses')
 router.register(r'specialists/(?P<specialist_id>[0-9a-f-]+)/documents',
                 AddressViewSet, basename='documents')
-router.register(r'specialists/(?P<specialist_id>[0-9a-f-]+)/languages',
-                AddressViewSet, basename='spoken_languages')
-router.register(r'specialists/(?P<specialist_id>[0-9a-f-]+)/specializations',
-                AddressViewSet, basename='chosen_specializations')
 router.register('search', SearchList, basename='search')
 router.register('currencies', CurrencyViewSet, basename='currencies')
 router.register('languages', LanguageViewSet, basename='languages')
