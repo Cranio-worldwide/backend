@@ -213,9 +213,32 @@ class StatusSerializer(serializers.ModelSerializer):
         return rep
 
 
+class ShortProfileSerializer(serializers.ModelSerializer):
+    """Serializer for Specialist Profile - for search page."""
+    photo = serializers.ReadOnlyField(source='user.photo')
+    first_name = serializers.ReadOnlyField(source='user.first_name')
+    middle_name = serializers.ReadOnlyField(source='user.middle_name')
+    last_name = serializers.ReadOnlyField(source='user.last_name')
+
+    class Meta:
+        fields = ('first_name', 'middle_name', 'last_name', 'photo')
+        model = Specialist
+
+
+# class FullSpecialistSerializer(SpecialistSerializer):
+#     photo = serializers.ReadOnlyField(source='user.photo')
+#     first_name = serializers.ReadOnlyField(source='user.first_name')
+#     middle_name = serializers.ReadOnlyField(source='user.middle_name')
+#     last_name = serializers.ReadOnlyField(source='user.last_name')
+#     phone = serializers.ReadOnlyField(source='user.phone')
+
+#     class Meta(SpecialistSerializer.Meta):
+#         fields = SpecialistSerializer.Meta.fields + ('photo', 'first_name', 'middle_name', 'last_name', 'phone')
+
+
 class SearchSerializer(serializers.ModelSerializer):
     """Serializer for search of specialists nearby."""
-    specialist = SpecialistSerializer(read_only=True)
+    specialist = ShortProfileSerializer(read_only=True)
     distance = serializers.DecimalField(max_digits=4, decimal_places=1,
                                         read_only=True)
 
