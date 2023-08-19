@@ -10,7 +10,6 @@ from apps.core.services.translations import (
 )
 from apps.users.models import CustomUser
 
-from .managers import SpecialistManager
 from .validators import validate_year
 
 
@@ -24,15 +23,16 @@ class Specialist(models.Model):
     speciality = models.CharField(
         verbose_name='Speciality',
         max_length=100,
+        blank=True,
     )
     languages = models.ManyToManyField(
-        'Language',
+        'Language', blank=True,
     )
     specializations = models.ManyToManyField(
-        'Specialization'
+        'Specialization', blank=True,
     )
     service_types = models.ManyToManyField(
-        'ServiceType'
+        'ServiceType', blank=True,
     )
 
     class Meta:
@@ -45,24 +45,12 @@ class Specialist(models.Model):
             self.id = self.user.id
         self.about_en, self.about_ru = translate_field(
             self.about_en, self.about_ru)
-        self.speciality_en, self.speciality_ru = translate_field(
-            self.speciality_en, self.speciality_ru)
+        # self.speciality_en, self.speciality_ru = translate_field(
+        #     self.speciality_en, self.speciality_ru)
         super(Specialist, self).save()
 
     def __str__(self):
-        return f'{self.specialist}: {self.first_name} {self.last_name}'
-
-    def clean(self):
-        """
-        Demands filling comments if corrections by specialist are required.
-        Cleans comments if approval is passed.
-        """
-        if (self.status == self.Status.CORRECTING and not
-                self.approver_comments):
-            raise ValidationError(_('Please comment the status.'))
-        if (self.approver_comments and self.status not in [
-                self.Status.CORRECTING, self.Status.CHECKING]):
-            self.approver_comments = ''
+        return f'Specialist {self.user}'
 
 
 class Currency(models.Model):
@@ -136,9 +124,10 @@ class Status(models.Model):
         choices=Stage.choices,
         default=Stage.FILLING,
     )
-    comments = models.TextField(
+    comments = models.CharField(
         verbose_name='Admin comments for corrections',
         blank=True,
+        max_length=200,
     )
     modified = models.DateTimeField(
         verbose_name='Last status update',
@@ -150,7 +139,19 @@ class Status(models.Model):
         verbose_name_plural = 'Specialists Statuses'
 
     def __str__(self):
-        return f'{self.specialist}: {self.stage}'
+        return self.stage
+
+    def clean(self):
+        """
+        Demands filling comments if corrections by specialist are required.
+        Cleans comments if approval is passed.
+        """
+        if self.stage == self.Stage.EDIT and not self.comments:
+            raise ValidationError(_('Please comment the status.'))
+        if (self.comments and self.stage not in [
+                    self.Stage.EDIT, self.Stage.CHECK
+                ]):
+            self.approver_comments = ''
 
 
 class CranioDiploma(models.Model):

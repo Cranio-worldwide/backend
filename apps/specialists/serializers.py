@@ -1,4 +1,5 @@
 import base64
+from collections import OrderedDict
 
 from django.core.files.base import ContentFile
 from django.db.transaction import atomic
@@ -7,10 +8,21 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from .models import (Address, Currency, Language, Specialist, Status,
-                     Specialization, CranioDiploma, CranioInstitute, Document)
+                     Specialization, CranioDiploma, CranioInstitute, Document, ServiceType)
 
 
-from apps.users.serializers import UserSerializer
+class DocumentSerializer(serializers.ModelSerializer):
+    """Serializer for Specialist Documents."""
+    class Meta:
+        fields = ('id', 'file')
+        model = Document
+
+
+class CranioInstituteSerializer(serializers.ModelSerializer):
+    """Serializer for list of available Cranio Institute organizations."""
+    class Meta:
+        fields = ('id', 'title')
+        model = CranioInstitute
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -21,10 +33,17 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class SpecializationSerializer(serializers.ModelSerializer):
-    """Serializer for list of available Languages."""
+    """Serializer for list of available Specializations."""
     class Meta:
         fields = ('id', 'title')
         model = Specialization
+
+
+class ServiceTypeSerializer(serializers.ModelSerializer):
+    """Serializer for list of available Types of service."""
+    class Meta:
+        fields = ('id', 'title')
+        model = ServiceType
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -58,25 +77,39 @@ class Base64ImageField(serializers.ImageField):
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
-    
+    specializations = serializers.ListField(child=serializers.CharField())
+
     class Meta:
-        fields = ('id', 'about', 'speciality', 'languages', 'specializations', 'service_types')
+        fields = ('id', 'about', 'speciality', 'languages',
+                  'specializations', 'service_types')
         model = Specialist
         read_only_fields = ('id',)
+
+    def to_representation(self, instance):
+        rep = OrderedDict()
+        rep['id'] = instance.id
+        rep['about'] = instance.about
+        rep['speciality'] = instance.speciality
+        rep['languages'] = LanguageSerializer(instance.languages, many=True).data
+        rep['specializations'] = SpecializationSerializer(instance.specializations, many=True).data
+        rep['service_types'] = ServiceTypeSerializer(instance.service_types, many=True).data
+        return rep
 
     def _set_attrs(self, profile, services, langs, specs):
         if services is not None:
             profile.service_types.clear()
             profile.service_types.set(services)
-            
+
         if langs is not None:
             profile.languages.clear()
             profile.languages.set(langs)
-        
+
         if specs is not None:
             profile.specializations.clear()
-            capitalized_specs = set(map(lambda x: x.get('title').capitalize(), specs))
-            existing_specs = list(Specialization.objects.filter(title__in=capitalized_specs))
+            capitalized_specs = specs
+            existing_specs = list(Specialization.objects.filter(title__in=specs))
+            # capitalized_specs = set(map(lambda x: x.get('title').capitalize(), specs))
+            # existing_specs = list(Specialization.objects.filter(title__in=capitalized_specs))
             if len(capitalized_specs) != len(existing_specs):
                 db_titles = Specialization.objects.values_list('title', flat=True)
                 new_specs = [Specialization(title=title) for title in capitalized_specs if title not in db_titles]
@@ -87,18 +120,18 @@ class SpecialistSerializer(serializers.ModelSerializer):
 
     @atomic
     def create(self, validated_data):
-        services = validated_data.pop('service_types')
-        langs = validated_data.pop('languages')
-        specs = validated_data.pop('specializations')
+        services = validated_data.pop('service_types', None)
+        langs = validated_data.pop('languages', None)
+        specs = validated_data.pop('specializations', None)
         profile = Specialist.objects.create(**validated_data)
         self._set_attrs(profile, services, langs, specs)
         return super().create(validated_data)
 
     @atomic
     def update(self, instance, validated_data):
-        services = validated_data.pop('service_types')
-        langs = validated_data.pop('languages')
-        specs = validated_data.pop('specializations')
+        services = validated_data.pop('service_types', None)
+        langs = validated_data.pop('languages', None)
+        specs = validated_data.pop('specializations', None)
         self._set_attrs(instance, services, langs, specs)
         return super().update(instance, validated_data)
 
@@ -109,6 +142,16 @@ class CranioDiplomaSerializer(serializers.ModelSerializer):
         model = CranioDiploma
         read_only_fields = ('id',)
 
+    def validate(self, data):
+        user = self.context.get('request').user
+        if user.status and user.status.stage not in [
+                    Status.Stage.FILLING, Status.Stage.CHECK, Status.Stage.EDIT
+                ]:
+            return serializers.ValidationError(
+                _('Diploma data is not editable after verification.')
+            )
+        return data
+
     @atomic
     def create(self, validated_data):
         user = self.context.get('request').user
@@ -118,7 +161,7 @@ class CranioDiplomaSerializer(serializers.ModelSerializer):
                 specialist=specialist, **validated_data
             )
         else:
-            diploma = specialist.diploma[0]
+            diploma = specialist.diploma
             for attr, value in validated_data.items():
                 setattr(diploma, attr, value)
             diploma.save()
@@ -130,7 +173,7 @@ class CranioDiplomaSerializer(serializers.ModelSerializer):
             status.stage = Status.Stage.CHECK
             status.save()
 
-        # разбить на 4 функции-сервиса: спец, диплом, статус + уведомление
+        # разбить на 3 функции-сервиса: спец, диплом, статус + уведомление
         return diploma
 
 
@@ -139,6 +182,10 @@ class StatusSerializer(serializers.ModelSerializer):
         fields = ('id', 'stage', 'comments', 'modified')
         model = Status
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['stage'] = instance.get_stage_display()
+        return rep
 
 
 
@@ -171,62 +218,62 @@ class StatusSerializer(serializers.ModelSerializer):
 
 
 
-class ShortProfileSerializer(serializers.ModelSerializer):
-    """Serializer for Specialist Profile - for search page."""
-    first_name = serializers.CharField(required=False)
-    last_name = serializers.CharField(required=False)
-    photo = Base64ImageField(required=False, allow_null=True)
+# class ShortProfileSerializer(serializers.ModelSerializer):
+#     """Serializer for Specialist Profile - for search page."""
+#     first_name = serializers.CharField(required=False)
+#     last_name = serializers.CharField(required=False)
+#     photo = Base64ImageField(required=False, allow_null=True)
 
-    class Meta:
-        fields = ('first_name', 'last_name', 'photo')
-        model = Specialist
-
-
-class FullProfileSerializer(ShortProfileSerializer):
-    """Serializer for Specialist Profile - for details page."""
-    about = serializers.CharField(required=False)
-    diploma_issuer = serializers.CharField(required=False)
-    diploma_recipient = serializers.CharField(required=False)
-    phone = serializers.CharField(required=False)
-    practice_start = serializers.IntegerField(required=False)
-
-    class Meta(ShortProfileSerializer.Meta):
-        fields = ShortProfileSerializer.Meta.fields + (
-            'about', 'diploma_issuer', 'diploma_recipient',
-            'phone', 'practice_start',
-        )
-
-    def validate_phone(self, value):
-        spec_id = self.context['spec_id']
-        if (self.context['request'].method == 'PATCH' and Specialist.objects.
-                filter(profile__phone=value).
-                exclude(id=spec_id).
-                exists()):
-            raise serializers.ValidationError(_('Existing phone number.'))
+#     class Meta:
+#         fields = ('first_name', 'last_name', 'photo')
+#         model = Specialist
 
 
-class FullSpecialistSerializer(serializers.ModelSerializer):
-    """Serializer for model Specialists - for details page."""
-    profile = FullProfileSerializer(read_only=True)
-    addresses = AddressSerializer(many=True, read_only=True)
+# class FullProfileSerializer(ShortProfileSerializer):
+#     """Serializer for Specialist Profile - for details page."""
+#     about = serializers.CharField(required=False)
+#     diploma_issuer = serializers.CharField(required=False)
+#     diploma_recipient = serializers.CharField(required=False)
+#     phone = serializers.CharField(required=False)
+#     practice_start = serializers.IntegerField(required=False)
 
-    class Meta:
-        fields = ('id', 'email', 'profile', 'addresses')
-        model = Specialist
+#     class Meta(ShortProfileSerializer.Meta):
+#         fields = ShortProfileSerializer.Meta.fields + (
+#             'about', 'diploma_issuer', 'diploma_recipient',
+#             'phone', 'practice_start',
+#         )
+
+#     def validate_phone(self, value):
+#         spec_id = self.context['spec_id']
+#         if (self.context['request'].method == 'PATCH' and Specialist.objects.
+#                 filter(profile__phone=value).
+#                 exclude(id=spec_id).
+#                 exists()):
+#             raise serializers.ValidationError(_('Existing phone number.'))
 
 
-class ShortSpecialistSerializer(serializers.ModelSerializer):
-    """Serializer for model Specialists - for search page."""
-    profile = ShortProfileSerializer(read_only=True)
+# class FullSpecialistSerializer(serializers.ModelSerializer):
+#     """Serializer for model Specialists - for details page."""
+#     profile = FullProfileSerializer(read_only=True)
+#     addresses = AddressSerializer(many=True, read_only=True)
 
-    class Meta:
-        fields = ('id', 'email', 'profile')
-        model = Specialist
+#     class Meta:
+#         fields = ('id', 'email', 'profile', 'addresses')
+#         model = Specialist
+
+
+# class ShortSpecialistSerializer(serializers.ModelSerializer):
+#     """Serializer for model Specialists - for search page."""
+#     profile = ShortProfileSerializer(read_only=True)
+
+#     class Meta:
+#         fields = ('id', 'email', 'profile')
+#         model = Specialist
 
 
 class SearchSerializer(serializers.ModelSerializer):
     """Serializer for search of specialists nearby."""
-    specialist = ShortSpecialistSerializer(read_only=True)
+    # specialist = ShortSpecialistSerializer(read_only=True)
     distance = serializers.DecimalField(max_digits=4, decimal_places=1,
                                         read_only=True)
 

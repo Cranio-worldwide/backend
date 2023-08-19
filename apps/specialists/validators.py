@@ -8,7 +8,7 @@ def validate_year(data):
         raise ValidationError(
             _('Year should not be more than current one.')
         )
-    if data <= timezone.now().year - 100:
+    if data <= timezone.now().year - 80:
         raise ValidationError(
-            _('Year should not be less than') + f'{timezone.now().year - 100}'
+            _('Year should not be less than') + f' {timezone.now().year - 100}'
         )

@@ -8,4 +8,5 @@ class IsSpecialistOrReadOnly(BasePermission):
             return True
         pk = (view.kwargs.get('specialist_id')
               if view.kwargs.get('specialist_id') else view.kwargs.get('pk'))
-        return request.user.is_authenticated and request.user.pk == pk
+        pk = pk.replace('-', '')
+        return request.user.is_authenticated and str(request.user.pk.hex) == pk
