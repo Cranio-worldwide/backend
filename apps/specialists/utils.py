@@ -50,7 +50,7 @@ def filter_qs(queryset, query_params):
         loc_latitude__lt=(point_lat + radius_in_degree),
         loc_longitude__gt=(point_lon - radius_in_degree),
         loc_longitude__lt=(point_lon + radius_in_degree),
-        specialist__profile__status='ACTIVE')
+        specialist__status__stage='ACTIVE')
     )
 
     min_price = query_params.get('min_price')
@@ -75,7 +75,7 @@ def filter_qs(queryset, query_params):
             )
         ).
         select_related('specialist').
-        prefetch_related('specialist__services', 'specialist__addresses').
+        # prefetch_related('specialist__services', 'specialist__addresses').
         order_by('distance')
     )
 

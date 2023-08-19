@@ -7,8 +7,11 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import (Address, Currency, Language, Specialist, Status,
-                     Specialization, CranioDiploma, CranioInstitute, Document, ServiceType)
+from apps.core.consts import ACCEPTABLE_FILES, FILE_SIZE_LIMIT
+
+from .models import (Address, CranioDiploma, CranioInstitute, Currency,
+                     Document, Language, ServiceType, Specialist,
+                     Specialization, Status)
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -16,6 +19,20 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'file')
         model = Document
+
+    def validate(self, data):
+        file = data.get('file')
+        type, extension = file.content_type.split('/')
+        if extension not in ACCEPTABLE_FILES:
+            raise serializers.ValidationError(
+                _('This file type is not supported.')
+            )
+        if file.size > FILE_SIZE_LIMIT:
+            raise serializers.ValidationError(
+                _('Max acceptable file size is 5 megabytes.')
+            )
+        print(data)
+        return data
 
 
 class CranioInstituteSerializer(serializers.ModelSerializer):
@@ -46,6 +63,13 @@ class ServiceTypeSerializer(serializers.ModelSerializer):
         model = ServiceType
 
 
+class CurrencySerializer(serializers.ModelSerializer):
+    """Serializer for model Currency."""
+    class Meta:
+        fields = ('id', 'slug', 'name')
+        model = Currency
+
+
 class AddressSerializer(serializers.ModelSerializer):
     """Serializer for model Address."""
     class Meta:
@@ -58,12 +82,10 @@ class AddressSerializer(serializers.ModelSerializer):
             message=_('You have already added this address')
         )]
 
-
-class CurrencySerializer(serializers.ModelSerializer):
-    """Serializer for model Currency."""
-    class Meta:
-        fields = ('id', 'slug', 'name')
-        model = Currency
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['currency'] = CurrencySerializer(instance.currency).data
+        return rep
 
 
 class Base64ImageField(serializers.ImageField):
@@ -106,10 +128,8 @@ class SpecialistSerializer(serializers.ModelSerializer):
 
         if specs is not None:
             profile.specializations.clear()
-            capitalized_specs = specs
-            existing_specs = list(Specialization.objects.filter(title__in=specs))
-            # capitalized_specs = set(map(lambda x: x.get('title').capitalize(), specs))
-            # existing_specs = list(Specialization.objects.filter(title__in=capitalized_specs))
+            capitalized_specs = list(map(lambda x: x[0].upper() + x[1:], specs))
+            existing_specs = list(Specialization.objects.filter(title__in=capitalized_specs))
             if len(capitalized_specs) != len(existing_specs):
                 db_titles = Specialization.objects.values_list('title', flat=True)
                 new_specs = [Specialization(title=title) for title in capitalized_specs if title not in db_titles]
@@ -117,6 +137,7 @@ class SpecialistSerializer(serializers.ModelSerializer):
                 existing_specs.extend(new_specs)
 
             profile.specializations.set(existing_specs)
+        return profile
 
     @atomic
     def create(self, validated_data):
@@ -125,7 +146,7 @@ class SpecialistSerializer(serializers.ModelSerializer):
         specs = validated_data.pop('specializations', None)
         profile = Specialist.objects.create(**validated_data)
         self._set_attrs(profile, services, langs, specs)
-        return super().create(validated_data)
+        return profile
 
     @atomic
     def update(self, instance, validated_data):
@@ -144,11 +165,15 @@ class CranioDiplomaSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = self.context.get('request').user
-        if user.status and user.status.stage not in [
+        if hasattr(user, 'profile') and user.profile.status.stage not in [
                     Status.Stage.FILLING, Status.Stage.CHECK, Status.Stage.EDIT
                 ]:
-            return serializers.ValidationError(
+            raise serializers.ValidationError(
                 _('Diploma data is not editable after verification.')
+            )
+        if not user.first_name or not user.last_name:
+            raise serializers.ValidationError(
+                _('Please fill in your first and last names.')
             )
         return data
 
@@ -188,7 +213,16 @@ class StatusSerializer(serializers.ModelSerializer):
         return rep
 
 
+class SearchSerializer(serializers.ModelSerializer):
+    """Serializer for search of specialists nearby."""
+    specialist = SpecialistSerializer(read_only=True)
+    distance = serializers.DecimalField(max_digits=4, decimal_places=1,
+                                        read_only=True)
 
+    class Meta:
+        fields = ('loc_latitude', 'loc_longitude', 'description', 'distance',
+                  'min_price', 'currency', 'specialist')
+        model = Address
 
 
 
@@ -271,16 +305,7 @@ class StatusSerializer(serializers.ModelSerializer):
 #         model = Specialist
 
 
-class SearchSerializer(serializers.ModelSerializer):
-    """Serializer for search of specialists nearby."""
-    # specialist = ShortSpecialistSerializer(read_only=True)
-    distance = serializers.DecimalField(max_digits=4, decimal_places=1,
-                                        read_only=True)
 
-    class Meta:
-        fields = ('loc_latitude', 'loc_longitude', 'description', 'distance',
-                  'min_price', 'currency', 'specialist')
-        model = Address
 
 
 

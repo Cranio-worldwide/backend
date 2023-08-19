@@ -13,4 +13,4 @@ class SpecBasedMixin:
                                  pk=self.kwargs.get('specialist_id'))
 
     def perform_create(self, serializer):
-        serializer.save(specialist=self.request.user)
+        serializer.save(specialist=self.request.user.profile)

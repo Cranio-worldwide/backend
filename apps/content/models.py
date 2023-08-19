@@ -15,7 +15,7 @@ class News(TitledModel):
         blank=True,
         upload_to='news/%Y-%m-%d'
     )
-    date = models.DateField(
+    date = models.DateTimeField(
         verbose_name='Date of publishment',
         auto_now_add=True,
     )
@@ -36,7 +36,6 @@ class AboutCranio(TitledModel):
         verbose_name='Picture',
         upload_to='about_cranio/%Y-%m-%d',
     )
-    
     text = models.TextField(verbose_name='About')
     link = models.URLField(verbose_name='Link')
     is_published = models.BooleanField(

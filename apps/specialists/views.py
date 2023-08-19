@@ -31,6 +31,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
 
     @action(methods=['GET'], detail=True)
     def diploma(self, request, pk):
+        """Specialist's Cranio diploma data."""
         diploma = get_object_or_404(CranioDiploma, specialist_id=pk)
         serializer = CranioDiplomaSerializer(diploma)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -38,6 +39,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
     @action(methods=['POST'], detail=False,
             permission_classes=(IsAuthenticated,))
     def verify_diploma(self, request):
+        """Sending Specialist's Cranio diploma for verification."""
         serializer = CranioDiplomaSerializer(
             data=request.data,
             context={'view': self, 'request': request}
@@ -48,6 +50,7 @@ class SpecialistViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
 
     @action(methods=['GET'], detail=True)
     def profile_status(self, request, pk):
+        """Status of Specilist's profile on site."""
         profile_status = get_object_or_404(Status, specialist_id=pk)
         serializer = StatusSerializer(profile_status)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -70,6 +73,7 @@ class DocumentViewSet(SpecBasedMixin, mixins.CreateModelMixin,
 
     def get_queryset(self):
         return self.get_specialist().documents.all()
+
 
 class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
     """Available Currencies."""

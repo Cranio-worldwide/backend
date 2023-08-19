@@ -45,8 +45,8 @@ class Specialist(models.Model):
             self.id = self.user.id
         self.about_en, self.about_ru = translate_field(
             self.about_en, self.about_ru)
-        # self.speciality_en, self.speciality_ru = translate_field(
-        #     self.speciality_en, self.speciality_ru)
+        self.speciality_en, self.speciality_ru = translate_field(
+            self.speciality_en, self.speciality_ru)
         super(Specialist, self).save()
 
     def __str__(self):

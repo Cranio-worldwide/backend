@@ -18,13 +18,16 @@ class DocumentInline(admin.TabularInline):
 
 @admin.register(Specialist)
 class SpecialistAdmin(TranslationAdmin):
-    list_display = ('id', 'user', 'first_name', 'last_name', 'status')
+    list_display = ('id', 'user', 'first_name', 'last_name', 'status', 'modified')
     list_filter = ('status',)
     inlines = (StatusInline, DiplomaInline, DocumentInline)
     autocomplete_fields = ('languages', 'specializations', 'service_types')
 
     def status(self, obj):
         return obj.status.stage
+
+    def modified(self, obj):
+        return obj.status.modified
 
     def first_name(self, obj):
         return obj.user.first_name
@@ -33,6 +36,7 @@ class SpecialistAdmin(TranslationAdmin):
         return obj.user.last_name
 
     status.short_description = 'Status'
+    modified.short_description = 'Last status update'
 
 
 @admin.register(Address)
