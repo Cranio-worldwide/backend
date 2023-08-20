@@ -101,6 +101,11 @@ class Base64ImageField(serializers.ImageField):
 class SpecialistSerializer(serializers.ModelSerializer):
     """Serializer for Specialists: personal are + profile page."""
     specializations = serializers.ListField(child=serializers.CharField())
+    photo = serializers.ImageField(source='user.photo')
+    first_name = serializers.CharField(source='user.first_name')
+    middle_name = serializers.CharField(source='user.middle_name')
+    last_name = serializers.CharField(source='user.last_name')
+    phone = serializers.CharField(source='user.phone')
 
     class Meta:
         fields = ('id', 'about', 'phone', 'photo', 'speciality',
