@@ -6,9 +6,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from apps.core.services.translations import (
-    translate_field, transliterate_field,
-)
+from apps.core.services.translations import transliterate_field
+
 
 class CustomUserManager(BaseUserManager):
     """

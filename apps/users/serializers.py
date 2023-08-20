@@ -1,6 +1,7 @@
 import base64
 
 from django.core.files.base import ContentFile
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from .models import CustomUser
@@ -25,6 +26,26 @@ class UserSerializer(serializers.ModelSerializer):
                   'phone', 'photo')
         model = CustomUser
         read_only_fields = ('id', 'email', 'role')
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    """User registration serializer."""
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password')
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def validate_email(self, value):
+        value = value.lower()
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                _('There is already a user with the same e-mail address.')
+            )
+        return value
+
+    def create(self, validated_data: dict) -> CustomUser:
+        user = CustomUser.objects.create_user(**validated_data)
+        return user
 
 
 # class MeSpecialistSerializer(UserSerializer):

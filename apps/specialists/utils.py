@@ -75,8 +75,9 @@ def filter_qs(queryset, query_params):
             )
         ).
         select_related('specialist').
-        # prefetch_related('specialist__services', 'specialist__addresses').
-        order_by('distance')
+        order_by('specialist').
+        distinct('specialist')
+        # order_by('distance')
     )
 
     return queryset

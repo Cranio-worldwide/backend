@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from .filters import LanguageFilter, SpecializationFilter
 from .mixins import SpecBasedMixin
 from .models import (Address, CranioDiploma, Currency, Language, Specialist,
                      Specialization, Status)
@@ -85,12 +86,14 @@ class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
     """Available Languages."""
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
+    filterset_class = LanguageFilter
 
 
 class SpecializationViewSet(viewsets.ReadOnlyModelViewSet):
     """Specialist's available specializations."""
     queryset = Specialization.objects.all()
     serializer_class = SpecializationSerializer
+    filterset_class = SpecializationFilter
 
 
 class SearchList(mixins.ListModelMixin, GenericViewSet):
@@ -106,12 +109,4 @@ class SearchList(mixins.ListModelMixin, GenericViewSet):
     def get_queryset(self):
         params = self.request.query_params
         queryset = Address.objects.all()
-        # return filter_qs(queryset, params)
-        # НЕ ПОЛУЧИЛОСЬ НИЧЕГО ЛУЧШЕ УДАЛЕНИЯ ДУБЛЕЙ ПО СПЕЦУ - СМ. UTILS.PY
-        queryset = list(filter_qs(queryset, params))
-        seen_specialists, output = set(), []
-        for address in queryset:
-            if address.specialist not in seen_specialists:
-                output.append(address)
-                seen_specialists.add(address.specialist)
-        return output
+        return filter_qs(queryset, params)

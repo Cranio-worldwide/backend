@@ -1,39 +1,15 @@
-import requests
-
-from django.http import HttpResponse
 from djoser.views import UserViewSet as DjoserViewSet
-from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
-# from djoser import signals
-# from djoser.conf import settings
 
 from apps.core.services.ip_location import (
     get_geodata, get_user_ip_address, parse_coordinates,
 )
-# from apps.specialists.serializers import MeSpecialistSerializer
-from apps.users.models import CustomUser
-
-from .serializers import UserSerializer
 
 
 class UserViewSet(DjoserViewSet):
     """Customized version of Djoser UserViewSet."""
-    # @action(["get", "delete"], detail=False)
-    # def me(self, request, *args, **kwargs):
-    #     """Endpoint with user's detailed data for Personal Area page."""
-    #     self.get_object = self.get_instance
-    #     if request.method == "GET":
-    #         if request.user.role == CustomUser.Role.SPECIALIST:
-    #             serializer = MeSpecialistSerializer(request.user)
-    #         if request.user.role == CustomUser.Role.ADMIN:
-    #             serializer = UserSerializer(request.user)
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    #     return self.destroy(request, *args, **kwargs)
-
     @action(["get"], detail=False, permission_classes=(AllowAny,))
     def me_where(self, request):
         """Returns coordinates of user basing on IP address."""

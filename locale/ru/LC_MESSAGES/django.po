@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-21 10:47+0300\n"
+"POT-Creation-Date: 2023-08-20 15:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,69 +16,90 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: .\apps\specialists\models.py:40
-msgid "Filling the application."
+#: .\apps\specialists\models.py:80
+msgid "Value should be larger than 0."
+msgstr "Значение должно быть больше 0."
+
+#: .\apps\specialists\models.py:106
+msgid "Filling out the application."
 msgstr "Заполнение анкеты."
 
-#: .\apps\specialists\models.py:41
+#: .\apps\specialists\models.py:107
 msgid "Pending diploma confirmation."
 msgstr "Ожидание подтверждения диплома."
 
-#: .\apps\specialists\models.py:42
+#: .\apps\specialists\models.py:108
 msgid "Corrections are required."
 msgstr "Необходимы правки."
 
-#: .\apps\specialists\models.py:43
+#: .\apps\specialists\models.py:109
 msgid "Pending payment."
 msgstr "Ожидание оплаты."
 
-#: .\apps\specialists\models.py:44
-msgid "Active therapist."
-msgstr "Активный."
+#: .\apps\specialists\models.py:110
+msgid "Active account."
+msgstr "Активный профиль."
 
-#: .\apps\specialists\models.py:121
+#: .\apps\specialists\models.py:146
 msgid "Please comment the status."
 msgstr "Пожалуйста, прокомментируйте статус."
 
-#: .\apps\specialists\serializers.py:21
+#: .\apps\specialists\serializers.py:28
+msgid "This file type is not supported."
+msgstr "Этот тип файлов не поддерживается."
+
+#: .\apps\specialists\serializers.py:32
+msgid "Max acceptable file size is 5 megabytes."
+msgstr "Максимальный размер файла - 5 мегабайт."
+
+#: .\apps\specialists\serializers.py:82
 msgid "You have already added this address"
 msgstr "Вы уже ранее добавили этот адрес."
 
-#: .\apps\specialists\serializers.py:53
-msgid "You have already added this service."
-msgstr "Вы уже ранее добавили эту услугу."
+#: .\apps\specialists\serializers.py:190
+msgid "Diploma data is not editable after verification."
+msgstr "Нельзя менять данные диплома после проверки."
 
-#: .\apps\specialists\serializers.py:99
-msgid "Existing phone number."
-msgstr "Номер телефона уже есть в базе данных."
+#: .\apps\specialists\serializers.py:194
+msgid "Please fill in your first and last names."
+msgstr "Пожалуйста, заполните Имя и Фамилию."
 
 #: .\apps\specialists\utils.py:20
 msgid "Enter radius as integer in range from 1 to "
 msgstr "Введите радиус как целое число от 1 до "
 
-#: .\apps\specialists\utils.py:30
+#: .\apps\specialists\utils.py:31
 msgid "Enter laitude & longitude separated by comma."
 msgstr "Введите широту и долготу, разделенные запятой."
 
-#: .\apps\specialists\utils.py:38
+#: .\apps\specialists\utils.py:39
 msgid "Prices should be integers"
 msgstr "Цены должны быть целыми числами."
 
-#: .\apps\users\models.py:20
+#: .\apps\specialists\validators.py:9
+msgid "Year should not be more than current one."
+msgstr "Год не может быть больше текущего."
+
+#: .\apps\specialists\validators.py:13
+msgid "Year should not be less than"
+msgstr "Год не может быть меньше"
+
+#: .\apps\users\models.py:22
 msgid "The Email must be set"
 msgstr "Необходимо указать e-mail."
 
-#: .\apps\users\models.py:36
+#: .\apps\users\models.py:38
 msgid "Superuser must have is_staff=True."
 msgstr "Superuser должен иметь значение is_staff=True."
 
-#: .\apps\users\models.py:38
+#: .\apps\users\models.py:40
 msgid "Superuser must have is_superuser=True."
 msgstr "Superuser должен иметь значение is_superuser=True."
 
-#~ msgid "Application should be filled in"
-#~ msgstr "Необходимо заполнить анкеты"
+#: .\apps\users\serializers.py:42
+msgid "There is already a user with the same e-mail address."
+msgstr "Уже существует пользователь с таким же e-mail."

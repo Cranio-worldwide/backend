@@ -1,7 +1,9 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 
-from .models import Address, CranioInstitute, Currency, Specialist, Language, ServiceType, Specialization, Status, CranioDiploma, Document
+from .models import (Address, CranioDiploma, CranioInstitute, Currency,
+                     Document, Language, ServiceType, Specialist,
+                     Specialization, Status)
 
 
 class StatusInline(admin.TabularInline):
@@ -18,7 +20,8 @@ class DocumentInline(admin.TabularInline):
 
 @admin.register(Specialist)
 class SpecialistAdmin(TranslationAdmin):
-    list_display = ('id', 'user', 'first_name', 'last_name', 'status', 'modified')
+    list_display = ('id', 'user', 'first_name', 'last_name',
+                    'status', 'modified')
     list_filter = ('status',)
     inlines = (StatusInline, DiplomaInline, DocumentInline)
     autocomplete_fields = ('languages', 'specializations', 'service_types')
@@ -55,21 +58,21 @@ class CurrencyAdmin(TranslationAdmin):
 
 @admin.register(Language)
 class LanguageAdmin(TranslationAdmin):
-    list_display = ('id', 'title')
+    list_display = ('id', 'title_ru', 'title_en')
     search_fields = ('title',)
     empty_value_display = '-пусто-'
 
 
 @admin.register(Specialization)
 class SpecializationAdmin(TranslationAdmin):
-    list_display = ('id', 'title')
+    list_display = ('id', 'title_ru', 'title_en')
     search_fields = ('title',)
     empty_value_display = '-пусто-'
 
 
 @admin.register(ServiceType)
 class ServiceTypeAdmin(TranslationAdmin):
-    list_display = ('id', 'title')
+    list_display = ('id', 'title_ru', 'title_en')
     search_fields = ('title',)
     empty_value_display = '-пусто-'
 

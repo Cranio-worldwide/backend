@@ -1,13 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from apps.core.services.translations import (
-    translate_field, transliterate_field,
-)
+from apps.core.services.translations import translate_field
 from apps.users.models import CustomUser
 
 from .validators import validate_year
@@ -241,29 +237,3 @@ class Document(models.Model):
 
     def __str__(self):
         return f'Document of {self.specialist}'
-
-
-# class SpecLanguage(models.Model):
-#     language = models.ForeignKey(Language, on_delete=models.CASCADE)
-#     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
-
-#     class Meta:
-#         verbose_name = "Specialist's Language"
-#         verbose_name_plural = "Specialist's Languages"
-#         default_related_name = 'spec_lang'
-
-#     def __str__(self):
-#         return f'{self.specialist} speaks {self.language}'
-
-
-# class SpecSpecialization(models.Model):
-#     specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
-#     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
-
-#     class Meta:
-#         verbose_name = "Specialist's Language"
-#         verbose_name_plural = "Specialist's Languages"
-#         default_related_name = 'spec_spec'
-
-#     def __str__(self):
-#         return f'{self.specialist} specialized in {self.specialization}'

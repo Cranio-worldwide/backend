@@ -1,7 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import AddressViewSet, CurrencyViewSet, SearchList, SpecialistViewSet, LanguageViewSet, SpecializationViewSet, DocumentViewSet
+from .views import (AddressViewSet, CurrencyViewSet, DocumentViewSet,
+                    LanguageViewSet, SearchList, SpecialistViewSet,
+                    SpecializationViewSet)
 
 router = DefaultRouter()
 router.register('specialists',

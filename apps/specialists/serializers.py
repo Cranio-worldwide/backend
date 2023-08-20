@@ -99,22 +99,36 @@ class Base64ImageField(serializers.ImageField):
 
 
 class SpecialistSerializer(serializers.ModelSerializer):
+    """Serializer for Specialists: personal are + profile page."""
     specializations = serializers.ListField(child=serializers.CharField())
 
     class Meta:
-        fields = ('id', 'about', 'speciality', 'languages',
-                  'specializations', 'service_types')
+        fields = ('id', 'about', 'phone', 'photo', 'speciality',
+                  'first_name', 'middle_name', 'last_name',
+                  'languages', 'specializations', 'service_types')
         model = Specialist
         read_only_fields = ('id',)
+
+    def _get_photo_url(self, photo):
+        request = self.context.get('request')
+        return request.build_absolute_uri(photo.url)
 
     def to_representation(self, instance):
         rep = OrderedDict()
         rep['id'] = instance.id
         rep['about'] = instance.about
         rep['speciality'] = instance.speciality
-        rep['languages'] = LanguageSerializer(instance.languages, many=True).data
-        rep['specializations'] = SpecializationSerializer(instance.specializations, many=True).data
-        rep['service_types'] = ServiceTypeSerializer(instance.service_types, many=True).data
+        rep['languages'] = LanguageSerializer(
+            instance.languages, many=True).data
+        rep['specializations'] = SpecializationSerializer(
+            instance.specializations, many=True).data
+        rep['service_types'] = ServiceTypeSerializer(
+            instance.service_types, many=True).data
+        rep['first_name'] = instance.user.first_name
+        rep['middle_name'] = instance.user.middle_name
+        rep['last_name'] = instance.user.last_name
+        rep['phone'] = instance.user.phone
+        rep['photo'] = self._get_photo_url(instance.user.photo)
         return rep
 
     def _set_attrs(self, profile, services, langs, specs):
@@ -128,11 +142,15 @@ class SpecialistSerializer(serializers.ModelSerializer):
 
         if specs is not None:
             profile.specializations.clear()
-            capitalized_specs = list(map(lambda x: x[0].upper() + x[1:], specs))
-            existing_specs = list(Specialization.objects.filter(title__in=capitalized_specs))
-            if len(capitalized_specs) != len(existing_specs):
-                db_titles = Specialization.objects.values_list('title', flat=True)
-                new_specs = [Specialization(title=title) for title in capitalized_specs if title not in db_titles]
+            titled_specs = list(map(lambda x: x[0].upper() + x[1:], specs))
+            existing_specs = list(Specialization.objects.filter(
+                title__in=titled_specs
+            ))
+            if len(titled_specs) != len(existing_specs):
+                db_titles = Specialization.objects.values_list('title',
+                                                               flat=True)
+                new_specs = [Specialization(title=title) for title
+                             in titled_specs if title not in db_titles]
                 new_specs = Specialization.objects.bulk_create(new_specs)
                 existing_specs.extend(new_specs)
 
@@ -215,25 +233,16 @@ class StatusSerializer(serializers.ModelSerializer):
 
 class ShortProfileSerializer(serializers.ModelSerializer):
     """Serializer for Specialist Profile - for search page."""
-    photo = serializers.ReadOnlyField(source='user.photo')
-    first_name = serializers.ReadOnlyField(source='user.first_name')
-    middle_name = serializers.ReadOnlyField(source='user.middle_name')
-    last_name = serializers.ReadOnlyField(source='user.last_name')
+    photo = serializers.ImageField(source='user.photo')
+    first_name = serializers.CharField(source='user.first_name')
+    middle_name = serializers.CharField(source='user.middle_name')
+    last_name = serializers.CharField(source='user.last_name')
+    phone = serializers.CharField(source='user.phone')
 
     class Meta:
-        fields = ('first_name', 'middle_name', 'last_name', 'photo')
+        fields = ('speciality', 'photo', 'phone',
+                  'first_name', 'middle_name', 'last_name')
         model = Specialist
-
-
-# class FullSpecialistSerializer(SpecialistSerializer):
-#     photo = serializers.ReadOnlyField(source='user.photo')
-#     first_name = serializers.ReadOnlyField(source='user.first_name')
-#     middle_name = serializers.ReadOnlyField(source='user.middle_name')
-#     last_name = serializers.ReadOnlyField(source='user.last_name')
-#     phone = serializers.ReadOnlyField(source='user.phone')
-
-#     class Meta(SpecialistSerializer.Meta):
-#         fields = SpecialistSerializer.Meta.fields + ('photo', 'first_name', 'middle_name', 'last_name', 'phone')
 
 
 class SearchSerializer(serializers.ModelSerializer):
@@ -246,143 +255,3 @@ class SearchSerializer(serializers.ModelSerializer):
         fields = ('loc_latitude', 'loc_longitude', 'description', 'distance',
                   'min_price', 'currency', 'specialist')
         model = Address
-
-
-
-
-
-# class MeSpecialistSerializer(UserSerializer):
-#     """Specialist serializer for Personal Area - /me endpoint."""
-#     status = serializers.SerializerMethodField()
-#     approver_comments = serializers.CharField(
-#         source='status.approver_comments')
-
-#     class Meta(UserSerializer.Meta):
-#         fields = UserSerializer.Meta.fields + (
-#             'status', 'approver_comments')
-
-#     def get_status(self, obj):
-#         return obj.status.get_stage_display()
-
-
-
-
-
-
-
-
-
-
-
-
-# class ShortProfileSerializer(serializers.ModelSerializer):
-#     """Serializer for Specialist Profile - for search page."""
-#     first_name = serializers.CharField(required=False)
-#     last_name = serializers.CharField(required=False)
-#     photo = Base64ImageField(required=False, allow_null=True)
-
-#     class Meta:
-#         fields = ('first_name', 'last_name', 'photo')
-#         model = Specialist
-
-
-# class FullProfileSerializer(ShortProfileSerializer):
-#     """Serializer for Specialist Profile - for details page."""
-#     about = serializers.CharField(required=False)
-#     diploma_issuer = serializers.CharField(required=False)
-#     diploma_recipient = serializers.CharField(required=False)
-#     phone = serializers.CharField(required=False)
-#     practice_start = serializers.IntegerField(required=False)
-
-#     class Meta(ShortProfileSerializer.Meta):
-#         fields = ShortProfileSerializer.Meta.fields + (
-#             'about', 'diploma_issuer', 'diploma_recipient',
-#             'phone', 'practice_start',
-#         )
-
-#     def validate_phone(self, value):
-#         spec_id = self.context['spec_id']
-#         if (self.context['request'].method == 'PATCH' and Specialist.objects.
-#                 filter(profile__phone=value).
-#                 exclude(id=spec_id).
-#                 exists()):
-#             raise serializers.ValidationError(_('Existing phone number.'))
-
-
-# class FullSpecialistSerializer(serializers.ModelSerializer):
-#     """Serializer for model Specialists - for details page."""
-#     profile = FullProfileSerializer(read_only=True)
-#     addresses = AddressSerializer(many=True, read_only=True)
-
-#     class Meta:
-#         fields = ('id', 'email', 'profile', 'addresses')
-#         model = Specialist
-
-
-# class ShortSpecialistSerializer(serializers.ModelSerializer):
-#     """Serializer for model Specialists - for search page."""
-#     profile = ShortProfileSerializer(read_only=True)
-
-#     class Meta:
-#         fields = ('id', 'email', 'profile')
-#         model = Specialist
-
-
-
-
-
-
-
-
-
-
-# class SpecLanguageSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields = ('language')
-#         model = SpecLanguage
-
-    # @atomic
-    # def create(self, validated_data):
-    #     user = self.context['request'].user
-    #     lang_id = validated_data.get('title')
-    #     specialization, _ = Specialization.objects.get_or_create(title=lang_id)
-    #     SpecSpecialization.objects.create(specialist=user, specialization=specialization)
-    #     return super().create(validated_data)
-
-    # @atomic
-    # def create(self, validated_data):
-    #     spoken_langs = []
-    #     for data_set in validated_data:
-    #         spec_id = data_set.get('specialist_id')
-    #         lang_id = data_set.get('language')
-    #         spoken_langs.append(SpecLanguage(specialist=spec_id, language=lang_id))
-    #     SpecLanguage.objects.bulk_create(spoken_langs)
-    #     return super().create(validated_data)
-
-
-
-
-
-# class SpecSpecializationSerializer(serializers.ModelSerializer):
-#     title = serializers.CharField()
-
-#     class Meta:
-#         fields = ('title')
-#         model = SpecSpecialization
-
-#     def validate(self, data):
-#         specialist = self.context['request'].user
-#         spec_title = data.get('title').capitalize()
-#         if specialist.specializations.filter(title=spec_title).exists():
-#             raise serializers.ValidationError(
-#                 _('This specialization has already been added.')
-#             )
-#         return data
-
-#     @atomic
-#     def create(self, validated_data):
-#         user = self.context['request'].user
-#         spec_title = validated_data.get('title').capitalize()
-#         specialization, _ = Specialization.objects.get_or_create(title=spec_title)
-#         SpecSpecialization.objects.create(specialist=user, specialization=specialization)
-#         return super().create(validated_data)
