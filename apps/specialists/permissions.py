@@ -1,7 +1,4 @@
-from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-
-from .models import Specialist
 
 
 class IsSpecialistOrReadOnly(BasePermission):
@@ -11,4 +8,5 @@ class IsSpecialistOrReadOnly(BasePermission):
             return True
         pk = (view.kwargs.get('specialist_id')
               if view.kwargs.get('specialist_id') else view.kwargs.get('pk'))
-        return get_object_or_404(Specialist, pk=pk) == request.user
+        pk = pk.replace('-', '')
+        return request.user.is_authenticated and str(request.user.pk.hex) == pk

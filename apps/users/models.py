@@ -6,6 +6,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from apps.core.services.translations import transliterate_field
+
 
 class CustomUserManager(BaseUserManager):
     """
@@ -58,7 +60,30 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name='user role',
         max_length=50,
         choices=Role.choices,
-        default=Role.SPECIALIST,
+        default=Role.CUSTOMER,
+    )
+
+    first_name = models.CharField(
+        verbose_name='First name', blank=True, max_length=50
+    )
+    middle_name = models.CharField(
+        verbose_name='Middle name', blank=True, max_length=50
+    )
+    last_name = models.CharField(
+        verbose_name='Last name', blank=True, max_length=50
+    )
+    photo = models.ImageField(
+        verbose_name="Photo",
+        null=True,
+        blank=True,
+        upload_to='photo/%Y-%m-%d',
+    )
+    phone = models.CharField(
+        verbose_name='Phone number',
+        max_length=17,
+        unique=True,
+        blank=True,
+        null=True
     )
 
     USERNAME_FIELD = "email"
@@ -72,3 +97,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def save(self, **kwargs):
+        """Translate blank transliterate first & last name."""
+        self.first_name_en, self.first_name_ru = transliterate_field(
+            self.first_name_en, self.first_name_ru)
+        self.middle_name_en, self.middle_name_ru = transliterate_field(
+            self.middle_name_en, self.middle_name_ru)
+        self.last_name_en, self.last_name_ru = transliterate_field(
+            self.last_name_en, self.last_name_ru)
+        super(CustomUser, self).save()

@@ -1,0 +1,161 @@
+[
+    {
+        "model": "content.news",
+        "pk": 1,
+        "fields": {
+            "title": "Title 1",
+            "title_en": "Title 1",
+            "title_ru": "Заголовок 1",
+            "text": "Long-long interesting news text #1.\r\nAnd many more letters.\r\nAnd here",
+            "text_en": "Long-long interesting news text #1.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №1.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "news/2023-06-20/tests.png",
+            "date": "2023-06-20",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 2,
+        "fields": {
+            "title": "Title 2",
+            "title_en": "Title 2",
+            "title_ru": "Заголовок 2",
+            "text": "Long-long interesting news text #2.\r\nAnd many more letters.\r\nAnd here",
+            "text_en": "Long-long interesting news text #2.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №2.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "news/2023-06-20/start.png",
+            "date": "2023-06-20",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 3,
+        "fields": {
+            "title": "Title 3",
+            "title_en": "Title 3",
+            "title_ru": "Заголовок 3",
+            "text": "Long-long interesting news text #3.\r\nAnd many more letters.\r\nAnd here",
+            "text_en": "Long-long interesting news text #3.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №3.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "news/2023-06-20/update.png",
+            "date": "2023-06-20",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 4,
+        "fields": {
+            "title": "Title 4",
+            "title_en": "Title 4",
+            "title_ru": "Заголовок 4",
+            "text": "Long-long interesting news text #4.\r\nAnd many more letters.\r\nAnd here",
+            "text_en": "Long-long interesting news text #4.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №4.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "",
+            "date": "2023-07-03",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 5,
+        "fields": {
+            "title": "Unpublished",
+            "title_en": "Unpublished",
+            "title_ru": "Не публикуем",
+            "text": "Long-long interesting news text #5.\r\nAnd many more letters.\r\nAnd here",
+            "text_en": "Long-long interesting news text #5.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №5.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "",
+            "date": "2023-07-03",
+            "is_published": false
+        }
+    },
+    {
+        "model": "content.aboutcranio",
+        "pk": 1,
+        "fields": {
+            "image": "about_cranio/2023-07-03/123.png",
+            "text": "Many words about Cranio",
+            "text_en": "Many words about Cranio",
+            "text_ru": "Много слов о Cranio",
+            "link": "http://www.cranio.com",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.aboutcranio",
+        "pk": 2,
+        "fields": {
+            "image": "about_cranio/2023-07-03/123_pBJvj75.png",
+            "text": "Some more",
+            "text_en": "Some more",
+            "text_ru": "Еще",
+            "link": "http://www.cranio.com",
+            "is_published": false
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 1,
+        "fields": {
+            "name": "main",
+            "fields_ru": {
+                "Find your therapist": "Найдите подходящего специалиста",
+                "Look who is close to you": "Вот кто находится поблизости"
+            },
+            "fields_en": {
+                "Find your therapist": "Find your therapist",
+                "Look who is close to you": "Look who is close to you"
+            }
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 2,
+        "fields": {
+            "name": "search",
+            "fields_ru": {
+                "Next": "Следующий",
+                "Search results": "Результаты поиска"
+            },
+            "fields_en": {
+                "Next": "Next",
+                "Search results": "Search results"
+            }
+        }
+    },
+    {
+        "model": "specialists.currency",
+        "pk": 1,
+        "fields": {
+            "slug": "EUR",
+            "name": "Euro",
+            "name_en": "Euro",
+            "name_ru": "Евро"
+        }
+    },
+    {
+        "model": "specialists.currency",
+        "pk": 2,
+        "fields": {
+            "slug": "USD",
+            "name": "US Dollars",
+            "name_en": "US Dollars",
+            "name_ru": "Доллары США"
+        }
+    },
+    {
+        "model": "specialists.currency",
+        "pk": 3,
+        "fields": {
+            "slug": "RUR",
+            "name": "Rubles",
+            "name_en": "Rubles",
+            "name_ru": "Руб."
+        }
+    }
+]

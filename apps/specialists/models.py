@@ -1,97 +1,34 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from apps.core.services.translations import (
-    translate_field, transliterate_field,
-)
+from apps.core.services.translations import translate_field
 from apps.users.models import CustomUser
 
-from .managers import SpecialistManager
 from .validators import validate_year
 
 
-class Specialist(CustomUser):
-    """Class for creating a user: Specialists."""
-    role = CustomUser.Role.SPECIALIST
-
-    objects = SpecialistManager()
-
-    class Meta:
-        proxy = True
-        verbose_name = 'Specialist'
-        verbose_name_plural = 'Specialists'
-
-    def __str__(self):
-        return self.email
-
-
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created and instance.role == 'SPECIALIST':
-        SpecialistProfile.objects.create(specialist=instance)
-
-
-class SpecialistProfile(models.Model):
+class Specialist(models.Model):
     """The  model for specialist profile: 1to1 with Specialist."""
-    class Status(models.TextChoices):
-        FILLING = 'FILLING', _('Filling the application.')
-        CHECKING = 'CHECKING', _('Pending diploma confirmation.')
-        CORRECTING = 'CORRECTING', _('Corrections are required.')
-        PAYING = 'PAYMENT', _('Pending payment.')
-        ACTIVE = 'ACTIVE', _('Active therapist.')
-
-    specialist = models.OneToOneField(
+    id = models.UUIDField(primary_key=True)
+    user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile'
     )
-    first_name = models.CharField(
-        verbose_name='First name', blank=True, max_length=150
-    )
-    last_name = models.CharField(
-        verbose_name='Last name', blank=True, max_length=150
-    )
-    photo = models.ImageField(
-        verbose_name="Specialist's photo",
-        null=True,
-        blank=True,
-        upload_to='photo/%Y-%m-%d',
-    )
-    about = models.TextField(
-        verbose_name='About specialist', blank=True)
-    phone = models.CharField(
-        verbose_name='Phone number',
-        max_length=17,
-        unique=True,
-        blank=True,
-        null=True
-    )
-    practice_start = models.PositiveSmallIntegerField(
-        verbose_name='Year of practice start',
-        blank=True,
-        null=True,
-        validators=[validate_year],
-    )
-    diploma_issuer = models.CharField(
-        verbose_name='Organization-issuer of diploma',
-        max_length=255,
-        blank=True
-    )
-    diploma_recipient = models.CharField(
-        verbose_name='Name of diploma recipient mentioned in diploma',
+    about = models.TextField(verbose_name='About specialist', blank=True)
+    speciality = models.CharField(
+        verbose_name='Speciality',
         max_length=100,
         blank=True,
     )
-    status = models.CharField(
-        verbose_name='Status of specialist',
-        max_length=50,
-        choices=Status.choices,
-        default=Status.FILLING,
+    languages = models.ManyToManyField(
+        'Language', blank=True,
     )
-    approver_comments = models.TextField(
-        verbose_name='Admin comments for corrections',
-        blank=True,
+    specializations = models.ManyToManyField(
+        'Specialization', blank=True,
+    )
+    service_types = models.ManyToManyField(
+        'ServiceType', blank=True,
     )
 
     class Meta:
@@ -100,32 +37,33 @@ class SpecialistProfile(models.Model):
 
     def save(self, **kwargs):
         """Translate blank about, transliterate first & last name."""
-        self.first_name_en, self.first_name_ru = transliterate_field(
-            self.first_name_en, self.first_name_ru)
-        self.last_name_en, self.last_name_ru = transliterate_field(
-            self.last_name_en, self.last_name_ru)
+        if not self.pk:
+            self.id = self.user.id
         self.about_en, self.about_ru = translate_field(
             self.about_en, self.about_ru)
-        super(SpecialistProfile, self).save()
+        self.speciality_en, self.speciality_ru = translate_field(
+            self.speciality_en, self.speciality_ru)
+        super(Specialist, self).save()
 
     def __str__(self):
-        return f'{self.specialist}: {self.first_name} {self.last_name}'
+        return f'Specialist {self.user}'
 
-    def clean(self):
-        """
-        Demands filling comments if corrections by specialist are required.
-        Cleans comments if approval is passed.
-        """
-        if (self.status == self.Status.CORRECTING and not
-                self.approver_comments):
-            raise ValidationError(_('Please comment the status.'))
-        if (self.approver_comments and self.status not in [
-                self.Status.CORRECTING, self.Status.CHECKING]):
-            self.approver_comments = ''
+
+class Currency(models.Model):
+    """The Currency model."""
+    slug = models.SlugField(verbose_name='Currency slug')
+    name = models.CharField(verbose_name='Currency name', max_length=20)
+
+    class Meta:
+        verbose_name = 'Currency'
+        verbose_name_plural = 'Currencies'
+
+    def __str__(self):
+        return self.slug
 
 
 class Address(models.Model):
-    """The model for specialist's place of reception."""
+    """The model for Specialist's place of reception."""
     specialist = models.ForeignKey(
         Specialist,
         related_name='addresses',
@@ -136,6 +74,16 @@ class Address(models.Model):
     description = models.TextField(
         verbose_name='Details of address',
         blank=True,
+    )
+    min_price = models.IntegerField(
+        verbose_name='Minimal price',
+        validators=[MinValueValidator(1, _('Value should be larger than 0.'))]
+    )
+    currency = models.ForeignKey(
+        'Currency',
+        on_delete=models.SET_DEFAULT,
+        default=3,
+        verbose_name='Currency',
     )
 
     class Meta:
@@ -152,49 +100,139 @@ class Address(models.Model):
         super(Address, self).save()
 
 
-class Currency(models.Model):
-    """The Currency model."""
-    slug = models.SlugField(verbose_name='Currency slug')
-    name = models.CharField(verbose_name='Currency name', max_length=20)
+class Status(models.Model):
+    """Model for status of Specialist's Account"""
+    class Stage(models.TextChoices):
+        FILLING = 'FILLING', _('Filling out the application.')
+        CHECK = 'CHECK', _('Pending diploma confirmation.')
+        EDIT = 'EDIT', _('Corrections are required.')
+        PAYING = 'PAYING', _('Pending payment.')
+        ACTIVE = 'ACTIVE', _('Active account.')
+
+    specialist = models.OneToOneField(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name='status',
+    )
+    stage = models.CharField(
+        verbose_name='Status of specialist',
+        max_length=50,
+        choices=Stage.choices,
+        default=Stage.FILLING,
+    )
+    comments = models.CharField(
+        verbose_name='Admin comments for corrections',
+        blank=True,
+        max_length=200,
+    )
+    modified = models.DateTimeField(
+        verbose_name='Last status update',
+        auto_now=True,
+    )
 
     class Meta:
-        verbose_name = 'Currency'
-        verbose_name_plural = 'Currencies'
+        verbose_name = 'Specialist Status'
+        verbose_name_plural = 'Specialists Statuses'
 
     def __str__(self):
-        return self.slug
+        return self.stage
+
+    def clean(self):
+        """
+        Demands filling comments if corrections by specialist are required.
+        Cleans comments if approval is passed.
+        """
+        if self.stage == self.Stage.EDIT and not self.comments:
+            raise ValidationError(_('Please comment the status.'))
+        if self.comments and self.stage not in [
+                self.Stage.EDIT, self.Stage.CHECK]:
+            self.approver_comments = ''
 
 
-class Service(models.Model):
-    """The model for Specialists' services and prices."""
+class CranioDiploma(models.Model):
+    """Model with data about Specialist's Cranio diploma."""
+    specialist = models.OneToOneField(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name='diploma',
+    )
+    organization = models.ForeignKey(
+        'CranioInstitute',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    year = models.SmallIntegerField(
+        verbose_name='Year of diploma issue',
+        validators=[validate_year],
+    )
+    file = models.FileField(
+        verbose_name='Scanned diploma',
+        upload_to='diplomas/%Y-%m-%d',
+    )
+
+    class Meta:
+        verbose_name = 'Education data'
+        verbose_name_plural = 'Education datas'
+
+    def __str__(self):
+        return f'Diploma of {self.specialist}'
+
+
+class TitledModel(models.Model):
+    """Abstract model with unique title."""
+    title = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class Specialization(TitledModel):
+    """Model for Specialists' specialization tags."""
+
+    class Meta:
+        verbose_name = 'Specialization'
+        verbose_name_plural = 'Specializations'
+
+
+class Language(TitledModel):
+    """Model for Specialists' languages spoken."""
+
+    class Meta:
+        verbose_name = 'Language'
+        verbose_name_plural = 'Languages'
+
+
+class ServiceType(TitledModel):
+    class Meta:
+        verbose_name = "Type of services"
+        verbose_name_plural = 'Types of services'
+
+
+class CranioInstitute(TitledModel):
+    """Model for Cranio educational organizations."""
+    class Meta:
+        verbose_name = 'Organization'
+        verbose_name_plural = 'Organizations'
+
+
+class Document(models.Model):
+    """Model for Specialists' documents/attachments."""
     specialist = models.ForeignKey(
         Specialist,
-        related_name='services',
         on_delete=models.CASCADE,
+        related_name='documents',
     )
-    name_service = models.CharField(
-        verbose_name='Service name',
-        max_length=100,
+    file = models.FileField(
+        verbose_name='Scanned document',
+        upload_to='diplomas/%Y-%m-%d',
     )
-    description = models.TextField(
-        verbose_name='Service detailed description',
-        blank=True,
-    )
-    price = models.PositiveIntegerField(verbose_name='Sevice price')
-    currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = 'Service'
-        verbose_name_plural = 'Services'
-        ordering = ('currency', 'price')
+        verbose_name = 'Document'
+        verbose_name_plural = 'Documents'
 
     def __str__(self):
-        return f'{self.name_service} - {self.price} {self.currency}'
-
-    def save(self, **kwargs):
-        """Translates blank name & description fields"""
-        self.name_service_en, self.name_service_ru = translate_field(
-            self.name_service_en, self.name_service_ru)
-        self.description_en, self.description_ru = translate_field(
-            self.description_en, self.description_ru)
-        super(Service, self).save()
+        return f'Document of {self.specialist}'

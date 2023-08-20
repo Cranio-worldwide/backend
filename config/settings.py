@@ -86,16 +86,6 @@ DATABASES = {
     }
 }
 
-# Для быстрого переключения на SQLite и работы без докера - закоментить код
-# выше и  раскоментить код ниже
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -117,11 +107,15 @@ DJOSER = {
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
     },
+    'SERIALIZERS': {
+        'user': 'apps.users.serializers.UserSerializer',
+        'current_user': 'apps.users.serializers.UserSerializer',
+    },
     'TOKEN_MODEL': None,
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24),  # на время разработки, потом 1 час
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60 * 24 * 5),  # на время разработки, потом 1 час
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('JWT',),
 }
@@ -148,7 +142,7 @@ LANGUAGES = (
     ('ru', 'Русский'),
 )
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -169,6 +163,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.getenv('EMAIL_HOST')

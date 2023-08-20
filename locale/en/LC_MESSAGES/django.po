@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-21 10:47+0300\n"
+"POT-Creation-Date: 2023-08-20 15:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,62 +18,86 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\apps\specialists\models.py:40
-msgid "Filling the application."
+#: .\apps\specialists\models.py:80
+msgid "Value should be larger than 0."
 msgstr ""
 
-#: .\apps\specialists\models.py:41
+#: .\apps\specialists\models.py:106
+msgid "Filling out the application."
+msgstr ""
+
+#: .\apps\specialists\models.py:107
 msgid "Pending diploma confirmation."
 msgstr ""
 
-#: .\apps\specialists\models.py:42
+#: .\apps\specialists\models.py:108
 msgid "Corrections are required."
 msgstr ""
 
-#: .\apps\specialists\models.py:43
+#: .\apps\specialists\models.py:109
 msgid "Pending payment."
 msgstr ""
 
-#: .\apps\specialists\models.py:44
-msgid "Active therapist."
+#: .\apps\specialists\models.py:110
+msgid "Active account."
 msgstr ""
 
-#: .\apps\specialists\models.py:121
+#: .\apps\specialists\models.py:146
 msgid "Please comment the status."
 msgstr ""
 
-#: .\apps\specialists\serializers.py:21
+#: .\apps\specialists\serializers.py:28
+msgid "This file type is not supported."
+msgstr ""
+
+#: .\apps\specialists\serializers.py:32
+msgid "Max acceptable file size is 5 megabytes."
+msgstr ""
+
+#: .\apps\specialists\serializers.py:82
 msgid "You have already added this address"
 msgstr ""
 
-#: .\apps\specialists\serializers.py:53
-msgid "You have already added this service."
+#: .\apps\specialists\serializers.py:190
+msgid "Diploma data is not editable after verification."
 msgstr ""
 
-#: .\apps\specialists\serializers.py:99
-msgid "Existing phone number."
+#: .\apps\specialists\serializers.py:194
+msgid "Please fill in your first and last names."
 msgstr ""
 
 #: .\apps\specialists\utils.py:20
 msgid "Enter radius as integer in range from 1 to "
 msgstr ""
 
-#: .\apps\specialists\utils.py:30
+#: .\apps\specialists\utils.py:31
 msgid "Enter laitude & longitude separated by comma."
 msgstr ""
 
-#: .\apps\specialists\utils.py:38
+#: .\apps\specialists\utils.py:39
 msgid "Prices should be integers"
 msgstr ""
 
-#: .\apps\users\models.py:20
+#: .\apps\specialists\validators.py:9
+msgid "Year should not be more than current one."
+msgstr ""
+
+#: .\apps\specialists\validators.py:13
+msgid "Year should not be less than"
+msgstr ""
+
+#: .\apps\users\models.py:22
 msgid "The Email must be set"
 msgstr ""
 
-#: .\apps\users\models.py:36
+#: .\apps\users\models.py:38
 msgid "Superuser must have is_staff=True."
 msgstr ""
 
-#: .\apps\users\models.py:38
+#: .\apps\users\models.py:40
 msgid "Superuser must have is_superuser=True."
+msgstr ""
+
+#: .\apps\users\serializers.py:42
+msgid "There is already a user with the same e-mail address."
 msgstr ""
