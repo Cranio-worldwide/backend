@@ -1,0 +1,775 @@
+[
+    {
+        "model": "content.news",
+        "pk": 1,
+        "fields": {
+            "title": "Безопасна ли кранисакральная терапия?",
+            "title_en": "Is craniosacral therapy safe?",
+            "title_ru": "Безопасна ли кранисакральная терапия?",
+            "text": "Практикующие врачи, как правило, работают с самыми разными клиентами. Терапия щадящая, что позволяет применять ее во время беременности, после родов, с новорожденными, маленькими детьми, взрослыми и пожилыми людьми. Клиенты обращаются за лечением по поводу широкого спектра симптомов, включая боль, усталость, состояния, связанные со стрессом, а также трудности со сном и проблемы с пищеварением. Другие клиенты заинтересованы в улучшении общего физического, психического и эмоционального благополучия.\r\nКлиенты часто испытывают большую жизнестойкость, энергию, спокойствие и ясность ума. После серии процедур многие люди замечают улучшение своих симптомов, испытывают большую жизненную силу и чувство благополучия.\r\nКлиенты сообщают об:\r\nУменьшении боли\r\nУлучшении общего состояния здоровья и повышении иммунитета.",
+            "text_en": "Practitioners generally work with a wide variety of clients. The therapy is gentle which allows it to be used during pregnancy, after childbirth, with newborns, young children, adults and the elderly. Clients seek treatment for an extensive range of symptoms including pain, fatigue, stress related conditions as well as difficulties with sleep and digestive issues. Other clients are interested in improving general physical, mental and emotional  well-being. Clients often experience more resilience, energy, calmness and mental clarity. After a series of treatments many people notice an improvement in their symptoms, experience greater vitality and a sense of well being. \r\nClients report\r\n- A reduction in pain\r\n- Better overall health and improved immunity",
+            "text_ru": "Практикующие врачи, как правило, работают с самыми разными клиентами. Терапия щадящая, что позволяет применять ее во время беременности, после родов, с новорожденными, маленькими детьми, взрослыми и пожилыми людьми. Клиенты обращаются за лечением по поводу широкого спектра симптомов, включая боль, усталость, состояния, связанные со стрессом, а также трудности со сном и проблемы с пищеварением. Другие клиенты заинтересованы в улучшении общего физического, психического и эмоционального благополучия.\r\nКлиенты часто испытывают большую жизнестойкость, энергию, спокойствие и ясность ума. После серии процедур многие люди замечают улучшение своих симптомов, испытывают большую жизненную силу и чувство благополучия.\r\nКлиенты сообщают об:\r\nУменьшении боли\r\nУлучшении общего состояния здоровья и повышении иммунитета.",
+            "picture": "news/2023-06-20/tests.png",
+            "date": "2023-06-20",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 2,
+        "fields": {
+            "title": "Открытие новой клиники",
+            "title_en": "Opening the new clinic",
+            "title_ru": "Открытие новой клиники",
+            "text": "Открытие новой клиники состоялось 12 сентября. Были проведены",
+            "text_en": "The opening ceremony of the new clinic took place on 12th of September.",
+            "text_ru": "Открытие новой клиники состоялось 12 сентября. Были проведены",
+            "picture": "news/2023-06-20/start.png",
+            "date": "2023-06-20",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 3,
+        "fields": {
+            "title": "Публикуемая новость",
+            "title_en": "Published news",
+            "title_ru": "Публикуемая новость",
+            "text": "Длинный-предлинный интересный текст новости №3.\r\nИ еще много букв.\r\nИ тут",
+            "text_en": "Long-long interesting news text #3.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №3.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "news/2023-06-20/update.png",
+            "date": "2023-06-20",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 4,
+        "fields": {
+            "title": "Еще одна публикуемая новость",
+            "title_en": "Another published news",
+            "title_ru": "Еще одна публикуемая новость",
+            "text": "Длинный-предлинный интересный текст новости №4.\r\nИ еще много букв.\r\nИ тут",
+            "text_en": "Long-long interesting news text #4.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №4.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "",
+            "date": "2023-07-03",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.news",
+        "pk": 5,
+        "fields": {
+            "title": "Не публикуем",
+            "title_en": "Unpublished",
+            "title_ru": "Не публикуем",
+            "text": "Длинный-предлинный интересный текст новости №5.\r\nИ еще много букв.\r\nИ тут",
+            "text_en": "Long-long interesting news text #5.\r\nAnd many more letters.\r\nAnd here",
+            "text_ru": "Длинный-предлинный интересный текст новости №5.\r\nИ еще много букв.\r\nИ тут",
+            "picture": "",
+            "date": "2023-07-03",
+            "is_published": false
+        }
+    },
+    {
+        "model": "content.aboutcranio",
+        "pk": 1,
+        "fields": {
+            "image": "about_cranio/2023-08-19/about_cranio.png",
+            "title": "О краниосакральной терапии",
+            "title_en": "About CranioSacral Therapy",
+            "title_ru": "О краниосакральной терапии",
+            "text": "Краниосакральная терапия базируется на идее того, что обученный практикующий врач манипулирует потоком спинномозговой жидкости. Джон Апледжер совершенствовал это искусство исцеления с 1970-х годов. То есть специалист держит голову и оказывает давление на кости черепа, чтобы помочь перекачать спинномозговую жидкость вокруг спинного мозга и нервных окончаний. Благодаря большому объему исследований, краниосакральная терапия на протяжении многих лет вселяла большие надежды.",
+            "text_en": "The basis of CranioSacral Therapy is the idea that there is fluid circulating around the spinal cord (cerebrospinal fluid = CSF) and that a trained practitioner can manipulate the flow of that fluid. John Upledger has perfected this art of healing since the 1970s. That is, someone holds your head and uses pressure on the skull bones to help pump CSF around the spinal cord and nerve endings. Due to the small amount of research, CranioSacral Therapy has created a lot of hype over the years.",
+            "text_ru": "Краниосакральная терапия базируется на идее того, что обученный практикующий врач манипулирует потоком спинномозговой жидкости. Джон Апледжер совершенствовал это искусство исцеления с 1970-х годов. То есть специалист держит голову и оказывает давление на кости черепа, чтобы помочь перекачать спинномозговую жидкость вокруг спинного мозга и нервных окончаний. Благодаря большому объему исследований, краниосакральная терапия на протяжении многих лет вселяла большие надежды.",
+            "link": "https://www.icra-uk.org/",
+            "is_published": true
+        }
+    },
+    {
+        "model": "content.aboutcranio",
+        "pk": 2,
+        "fields": {
+            "image": "about_cranio/2023-08-20/70083.png",
+            "title": "Еще один заголовок который не должен быть виден",
+            "title_en": "Another title that should not be visible",
+            "title_ru": "Еще один заголовок который не должен быть виден",
+            "text": "бла-бла-бла",
+            "text_en": "bla-bla-bla",
+            "text_ru": "бла-бла-бла",
+            "link": "https://v-meste.fun",
+            "is_published": false
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 3,
+        "fields": {
+            "name": "news",
+            "fields_ru": {
+                "Home": "Главная",
+                "More": "Читать далее",
+                "News": "Новости",
+                "See all": "Смотреть все",
+                "More news": "Другие новости"
+            },
+            "fields_en": {
+                "Home": "Home",
+                "More": "More",
+                "News": "News",
+                "See all": "See all",
+                "More news": "More news"
+            }
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 4,
+        "fields": {
+            "name": "specialist",
+            "fields_ru": {
+                "About": "О специалисте",
+                "Price": "Стоимость",
+                "Treatment": "Лечение",
+                "km from you": "км от вас",
+                "Share profile": "Поделиться профилем",
+                "Specialization": "Специализация",
+                "Get phone number": "Показать телефон",
+                "Also close to you": "Также рядом с вами",
+                "Initial admission": "Первичный прием",
+                "Show phone number": "Показать телефон",
+                "Request a callback": "Запросить обратный звонок",
+                "Make an appointment": "Записаться на прием"
+            },
+            "fields_en": {
+                "About": "About",
+                "Price": "Price",
+                "Treatment": "Treatment",
+                "km from you": "km from you",
+                "Share profile": "Share profile",
+                "Specialization": "Specialization",
+                "Get phone number": "Get phone number",
+                "Also close to you": "Also close to you",
+                "Initial admission": "Initial admission",
+                "Show phone number": "Show phone number",
+                "Request a callback": "Request a callback",
+                "Make an appointment": "Make an appointment"
+            }
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 5,
+        "fields": {
+            "name": "search",
+            "fields_ru": {
+                "km": "км",
+                "Max": "до",
+                "Min": "от",
+                "More": "Показать еще",
+                "Price": "Цена",
+                "Search": "Поиск",
+                "Distance": "Расстояние",
+                "Enter Address": "Введите адрес",
+                "Find your practitioner": "Найти своего специалиста",
+                "Look who is close to you now:": "Специалисты рядом с Вами:"
+            },
+            "fields_en": {
+                "km": "km",
+                "Max": "Max",
+                "Min": "Min",
+                "More": "More",
+                "Price": "Price",
+                "Search": "Search",
+                "Distance": "Distance",
+                "Enter Address": "Enter Address",
+                "Find your practitioner": "Find your practitioner",
+                "Look who is close to you now:": "Look who is close to you now:"
+            }
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 6,
+        "fields": {
+            "name": "header_footer",
+            "fields_ru": {
+                "Login": "Войти",
+                "Contacts": "Контакты",
+                "Specialists": "Специалисты",
+                "Information for specialists": "Информация для специалистов"
+            },
+            "fields_en": {
+                "Login": "Login",
+                "Contacts": "Contacts",
+                "Specialists": "Specialists",
+                "Information for specialists": "Information for specialists"
+            }
+        }
+    },
+    {
+        "model": "content.staticcontent",
+        "pk": 7,
+        "fields": {
+            "name": "main",
+            "fields_ru": {
+                "News": "Новости",
+                "See all": "Смотреть все",
+                "Find your practitioner": "Найти своего специалиста",
+                "Look who is close to you now:": "Специалисты рядом с Вами:",
+                "Helping practitioners and patients find each other": "Помогаем специалистам и клиентам найти друг друга"
+            },
+            "fields_en": {
+                "News": "News",
+                "See all": "See all",
+                "Find your practitioner": "Find your practitioner",
+                "Look who is close to you now:": "Look who is close to you now:",
+                "Helping practitioners and patients find each other": "Helping practitioners and patients find each other"
+            }
+        }
+    },
+    {
+        "model": "specialists.specialist",
+        "pk": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+        "fields": {
+            "user": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "about": "немного обо мне",
+            "about_en": "A few details about myself",
+            "about_ru": "немного обо мне",
+            "speciality": "Специалист",
+            "speciality_en": "Specialist",
+            "speciality_ru": "Специалист",
+            "languages": [
+                1,
+                2
+            ],
+            "specializations": [
+                1,
+                2,
+                7
+            ],
+            "service_types": [
+                2
+            ]
+        }
+    },
+    {
+        "model": "specialists.specialist",
+        "pk": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+        "fields": {
+            "user": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+            "about": "Слова слова",
+            "about_en": "Words words",
+            "about_ru": "Слова слова",
+            "speciality": "Врач-костоправ",
+            "speciality_en": "Kostopoli doctor",
+            "speciality_ru": "Врач-костоправ",
+            "languages": [
+                1
+            ],
+            "specializations": [
+                1,
+                2
+            ],
+            "service_types": [
+                1,
+                3
+            ]
+        }
+    },
+    {
+        "model": "specialists.specialist",
+        "pk": "e5b1b08f-190a-4127-9e59-6d4e78110ac5",
+        "fields": {
+            "user": "e5b1b08f-190a-4127-9e59-6d4e78110ac5",
+            "about": "Большой опыт",
+            "about_en": "Extensive experience",
+            "about_ru": "Большой опыт",
+            "speciality": "Херомант",
+            "speciality_en": "Palmist",
+            "speciality_ru": "Херомант",
+            "languages": [
+                1,
+                2
+            ],
+            "specializations": [
+                2
+            ],
+            "service_types": []
+        }
+    },
+    {
+        "model": "specialists.currency",
+        "pk": 1,
+        "fields": {
+            "slug": "EUR",
+            "name": "Евро",
+            "name_en": "Euro",
+            "name_ru": "Евро"
+        }
+    },
+    {
+        "model": "specialists.currency",
+        "pk": 2,
+        "fields": {
+            "slug": "USD",
+            "name": "Доллары США",
+            "name_en": "US Dollars",
+            "name_ru": "Доллары США"
+        }
+    },
+    {
+        "model": "specialists.currency",
+        "pk": 3,
+        "fields": {
+            "slug": "RUR",
+            "name": "Руб.",
+            "name_en": "Rubles",
+            "name_ru": "Руб."
+        }
+    },
+    {
+        "model": "specialists.address",
+        "pk": 1,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "loc_latitude": 59.93474,
+            "loc_longitude": 30.321405,
+            "description": "Под арку, вход направо, офис 218",
+            "description_en": "Under the arch, entrance to the right, office 218",
+            "description_ru": "Под арку, вход направо, офис 218",
+            "min_price": 1500,
+            "currency": 3
+        }
+    },
+    {
+        "model": "specialists.address",
+        "pk": 2,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "loc_latitude": 59.93475,
+            "loc_longitude": 30.32143,
+            "description": "Еще один офис, сами найдете",
+            "description_en": "Another office, you yourself will find",
+            "description_ru": "Еще один офис, сами найдете",
+            "min_price": 1000,
+            "currency": 3
+        }
+    },
+    {
+        "model": "specialists.address",
+        "pk": 3,
+        "fields": {
+            "specialist": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+            "loc_latitude": 59.935,
+            "loc_longitude": 30.3214,
+            "description": "Тестовый адрес Врачева",
+            "description_en": "Vrachev Test address",
+            "description_ru": "Тестовый адрес Врачева",
+            "min_price": 2000,
+            "currency": 3
+        }
+    },
+    {
+        "model": "specialists.address",
+        "pk": 4,
+        "fields": {
+            "specialist": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+            "loc_latitude": 60.0,
+            "loc_longitude": 29.0,
+            "description": "Тестовый адрес #2 Врачева",
+            "description_en": "Vrachev test address #2",
+            "description_ru": "Тестовый адрес #2 Врачева",
+            "min_price": 2500,
+            "currency": 3
+        }
+    },
+    {
+        "model": "specialists.address",
+        "pk": 5,
+        "fields": {
+            "specialist": "e5b1b08f-190a-4127-9e59-6d4e78110ac5",
+            "loc_latitude": 59.9,
+            "loc_longitude": 30.33,
+            "description": "Сами найдете",
+            "description_en": "You will find it yourself",
+            "description_ru": "Сами найдете",
+            "min_price": 1500,
+            "currency": 3
+        }
+    },
+    {
+        "model": "specialists.status",
+        "pk": 1,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "stage": "ACTIVE",
+            "comments": "Чего-то не хватает",
+            "modified": "2023-08-20T13:03:01.565Z"
+        }
+    },
+    {
+        "model": "specialists.status",
+        "pk": 2,
+        "fields": {
+            "specialist": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+            "stage": "ACTIVE",
+            "comments": "",
+            "modified": "2023-08-19T20:05:06.250Z"
+        }
+    },
+    {
+        "model": "specialists.status",
+        "pk": 3,
+        "fields": {
+            "specialist": "e5b1b08f-190a-4127-9e59-6d4e78110ac5",
+            "stage": "ACTIVE",
+            "comments": "",
+            "modified": "2023-08-19T20:17:01.822Z"
+        }
+    },
+    {
+        "model": "specialists.craniodiploma",
+        "pk": 1,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "organization": 1,
+            "year": 2020,
+            "file": "diplomas/2023-08-19/avatar_chYYzvh.png"
+        }
+    },
+    {
+        "model": "specialists.craniodiploma",
+        "pk": 2,
+        "fields": {
+            "specialist": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+            "organization": 2,
+            "year": 2010,
+            "file": "diplomas/2023-08-19/avatar_bSNsCRW.png"
+        }
+    },
+    {
+        "model": "specialists.craniodiploma",
+        "pk": 3,
+        "fields": {
+            "specialist": "e5b1b08f-190a-4127-9e59-6d4e78110ac5",
+            "organization": 1,
+            "year": 1990,
+            "file": "diplomas/2023-08-19/avatar_aJeBish.png"
+        }
+    },
+    {
+        "model": "specialists.specialization",
+        "pk": 1,
+        "fields": {
+            "title": "Болезнь Шляттера",
+            "title_en": "Shlatter desease",
+            "title_ru": "Болезнь Шляттера"
+        }
+    },
+    {
+        "model": "specialists.specialization",
+        "pk": 2,
+        "fields": {
+            "title": "Растяжение связок стопы",
+            "title_en": "Foot sprain",
+            "title_ru": "Растяжение связок стопы"
+        }
+    },
+    {
+        "model": "specialists.specialization",
+        "pk": 3,
+        "fields": {
+            "title": "Растяжение связок коленного сустава",
+            "title_en": "Knee sprain",
+            "title_ru": "Растяжение связок коленного сустава"
+        }
+    },
+    {
+        "model": "specialists.specialization",
+        "pk": 4,
+        "fields": {
+            "title": "Деформации костно-мышечной системы",
+            "title_en": "Deformities of the musculoskeletal system",
+            "title_ru": "Деформации костно-мышечной системы"
+        }
+    },
+    {
+        "model": "specialists.specialization",
+        "pk": 5,
+        "fields": {
+            "title": "Что-то новое",
+            "title_en": null,
+            "title_ru": "Что-то новое"
+        }
+    },
+    {
+        "model": "specialists.specialization",
+        "pk": 7,
+        "fields": {
+            "title": "Что-то непонятное",
+            "title_en": null,
+            "title_ru": "Что-то непонятное"
+        }
+    },
+    {
+        "model": "specialists.language",
+        "pk": 1,
+        "fields": {
+            "title": "Русский",
+            "title_en": "Russian",
+            "title_ru": "Русский"
+        }
+    },
+    {
+        "model": "specialists.language",
+        "pk": 2,
+        "fields": {
+            "title": "Английский",
+            "title_en": "English",
+            "title_ru": "Английский"
+        }
+    },
+    {
+        "model": "specialists.language",
+        "pk": 3,
+        "fields": {
+            "title": "Немецкий",
+            "title_en": "German",
+            "title_ru": "Немецкий"
+        }
+    },
+    {
+        "model": "specialists.language",
+        "pk": 4,
+        "fields": {
+            "title": "Испанский",
+            "title_en": "Spanish",
+            "title_ru": "Испанский"
+        }
+    },
+    {
+        "model": "specialists.servicetype",
+        "pk": 1,
+        "fields": {
+            "title": "Выезд на дом",
+            "title_en": "Visit client",
+            "title_ru": "Выезд на дом"
+        }
+    },
+    {
+        "model": "specialists.servicetype",
+        "pk": 2,
+        "fields": {
+            "title": "Онлайн-консультация",
+            "title_en": "Online consultation",
+            "title_ru": "Онлайн-консультация"
+        }
+    },
+    {
+        "model": "specialists.servicetype",
+        "pk": 3,
+        "fields": {
+            "title": "Прием на дому",
+            "title_en": "Visit at specialist's home",
+            "title_ru": "Прием на дому"
+        }
+    },
+    {
+        "model": "specialists.cranioinstitute",
+        "pk": 1,
+        "fields": {
+            "title": "Organization"
+        }
+    },
+    {
+        "model": "specialists.cranioinstitute",
+        "pk": 2,
+        "fields": {
+            "title": "Super Cranio"
+        }
+    },
+    {
+        "model": "specialists.document",
+        "pk": 1,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "file": "diplomas/2023-08-19/kitty.png"
+        }
+    },
+    {
+        "model": "specialists.document",
+        "pk": 2,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "file": "diplomas/2023-08-19/bykov.jpg"
+        }
+    },
+    {
+        "model": "specialists.document",
+        "pk": 3,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "file": "diplomas/2023-08-19/cloony.jpeg"
+        }
+    },
+    {
+        "model": "specialists.document",
+        "pk": 4,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "file": "diplomas/2023-08-19/bykov_bZjvwcR.jpg"
+        }
+    },
+    {
+        "model": "specialists.document",
+        "pk": 5,
+        "fields": {
+            "specialist": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+            "file": "diplomas/2023-08-19/счет_на_оплату_1308321450_july_2023.pdf"
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "414548c4-6d58-472a-af8f-e3ec5ecc54e1",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$S7u4m9036gw73edIpoysep$Pj5ALgGFc9IJH1FMvUz4yShx4P2ytIvHri4FGsOuuCk=",
+            "last_login": "2023-08-18T19:28:56.256Z",
+            "is_superuser": true,
+            "email": "admin@admin.ru",
+            "is_staff": true,
+            "is_active": true,
+            "is_verified": false,
+            "date_joined": "2023-08-18T19:26:45.272Z",
+            "role": "ADMIN",
+            "first_name": "",
+            "first_name_en": null,
+            "first_name_ru": null,
+            "middle_name": "",
+            "middle_name_en": null,
+            "middle_name_ru": null,
+            "last_name": "",
+            "last_name_en": null,
+            "last_name_ru": null,
+            "photo": "",
+            "phone": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "66898744-132b-4a3b-b2cc-a13c91ebc0e7",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$gKRoc2RGVodKjrZ3m29pMI$3BJU29WZ3JUGEs1HTWQBV8zQxSeQuKJk07hG1KVudlM=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "ruslanatarov@gmail.com",
+            "is_staff": false,
+            "is_active": true,
+            "is_verified": true,
+            "date_joined": "2023-08-18T19:43:55.672Z",
+            "role": "CUSTOMER",
+            "first_name": "Руслан",
+            "first_name_en": "Ruslan",
+            "first_name_ru": "Руслан",
+            "middle_name": "",
+            "middle_name_en": null,
+            "middle_name_ru": null,
+            "last_name": "Атаров",
+            "last_name_en": "Atarov",
+            "last_name_ru": "Атаров",
+            "photo": "photo/2023-08-18/temp_BybpIj6.png",
+            "phone": "84998133323",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "9d3d2f19-94d0-4427-aafe-5c8ae85bebfb",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$bFbKY7IXPYrC1jZQfnVIj6$xWTCwgF0siBKeQzqlvdb0jH/kJFMRDxbVBxE4c07k/g=",
+            "last_login": null,
+            "is_superuser": true,
+            "email": "root@root.root",
+            "is_staff": true,
+            "is_active": true,
+            "is_verified": false,
+            "date_joined": "2023-08-18T19:26:24.796Z",
+            "role": "ADMIN",
+            "first_name": "",
+            "first_name_en": null,
+            "first_name_ru": null,
+            "middle_name": "",
+            "middle_name_en": null,
+            "middle_name_ru": null,
+            "last_name": "",
+            "last_name_en": null,
+            "last_name_ru": null,
+            "photo": "",
+            "phone": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "acdf8034-bdef-47ad-a4e6-3fcabefd125a",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$bLL0yQsguGgbZP5sOphFS6$3MVkeo8KCEBvmPr6TmB4wP7/cCosxuVygqiezCccZXM=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "test1@test1.com",
+            "is_staff": false,
+            "is_active": true,
+            "is_verified": true,
+            "date_joined": "2023-08-19T19:48:29Z",
+            "role": "CUSTOMER",
+            "first_name": "Врач",
+            "first_name_en": "Vrach",
+            "first_name_ru": "Врач",
+            "middle_name": "Врачевич",
+            "middle_name_en": "Vrachevich",
+            "middle_name_ru": "Врачевич",
+            "last_name": "Врачев",
+            "last_name_en": "Vrachev",
+            "last_name_ru": "Врачев",
+            "photo": "photo/2023-08-20/alex.png",
+            "phone": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": "e5b1b08f-190a-4127-9e59-6d4e78110ac5",
+        "fields": {
+            "password": "pbkdf2_sha256$390000$pNSZqofZGh81QIK6TfnGMh$E45hvjCxAVo/G4idq9mEEiKOQHRFEUl7F0YXQea4lj4=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "test2@test2.com",
+            "is_staff": false,
+            "is_active": true,
+            "is_verified": true,
+            "date_joined": "2023-08-19T20:13:23Z",
+            "role": "CUSTOMER",
+            "first_name": "Грегори",
+            "first_name_en": "Gregori",
+            "first_name_ru": "Грегори",
+            "middle_name": "",
+            "middle_name_en": null,
+            "middle_name_ru": null,
+            "last_name": "Хаус",
+            "last_name_en": "Haus",
+            "last_name_ru": "Хаус",
+            "photo": "",
+            "phone": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]
