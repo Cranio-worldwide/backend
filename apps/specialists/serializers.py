@@ -184,8 +184,7 @@ class CranioDiplomaSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = self.context.get('request').user
         if hasattr(user, 'profile') and user.profile.status.stage not in [
-                    Status.Stage.FILLING, Status.Stage.CHECK, Status.Stage.EDIT
-                ]:
+                Status.Stage.FILLING, Status.Stage.CHECK, Status.Stage.EDIT]:
             raise serializers.ValidationError(
                 _('Diploma data is not editable after verification.')
             )

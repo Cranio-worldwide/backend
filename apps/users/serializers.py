@@ -44,8 +44,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data: dict) -> CustomUser:
-        user = CustomUser.objects.create_user(**validated_data)
-        return user
+        return CustomUser.objects.create_user(**validated_data)
 
 
 # class MeSpecialistSerializer(UserSerializer):

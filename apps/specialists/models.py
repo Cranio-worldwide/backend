@@ -144,9 +144,8 @@ class Status(models.Model):
         """
         if self.stage == self.Stage.EDIT and not self.comments:
             raise ValidationError(_('Please comment the status.'))
-        if (self.comments and self.stage not in [
-                    self.Stage.EDIT, self.Stage.CHECK
-                ]):
+        if self.comments and self.stage not in [
+                self.Stage.EDIT, self.Stage.CHECK]:
             self.approver_comments = ''
 
 
